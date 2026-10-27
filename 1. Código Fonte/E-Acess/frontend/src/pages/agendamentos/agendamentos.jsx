@@ -1,11 +1,10 @@
 import { use, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./agendamentos.css";
-import modal from "../../components/modal/modal";
-import Modal from "../../components/modal/modal";
 
 function Agendamentos() {
-  // Constante para inicializar o estado do modal
-  const [modalAberto, setModalAberto] = useState(false);
+  // Constante para inicializar o Navigate
+  const navigate = useNavigate();
 
   // Declarando constantes para armazenar e salvar agendamentos e agendamentos filtrados
   const [agendamentos, setAgendamentos] = useState([]);
@@ -133,14 +132,9 @@ function Agendamentos() {
           para encontrar os registros desejados.
         </p>
 
-        <button type="button" className="botao-novo-agendamento" onClick={() =>{
-            setModalAberto(true);}}>+ Novo agendamento
+        <button type="button" className="botao-novo-agendamento" onClick={() => 
+          navigate("/cadastrar-agendamento")}>+ Novo agendamento
         </button>
-
-        {modalAberto && (
-        <Modal onClose={() => setModalAberto(false)}
-        onSalvo={atualizarAgendamentos}/>
-)}
         
       </header>
 
