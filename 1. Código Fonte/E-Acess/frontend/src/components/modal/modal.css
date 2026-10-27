@@ -1,0 +1,312 @@
+
+.modal-agendamento-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+
+  animation: modal-overlay-aparecer 0.2s ease;
+}
+
+/* Janela principal do modal */
+.modal-agendamento {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+
+  padding: 28px;
+  border-radius: 14px;
+
+  background-color: #fff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+
+  animation: modal-caixa-aparecer 0.25s ease;
+}
+
+/* Cabeçalho */
+.modal-agendamento-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 24px;
+}
+
+.modal-agendamento-cabecalho h2 {
+  margin: 0;
+
+  color: #222;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+/* Botão de fechar (X) */
+.modal-agendamento-fechar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+  padding: 0;
+
+  border: none;
+  border-radius: 6px;
+
+  background: transparent;
+  color: #666;
+
+  font-size: 30px;
+  line-height: 1;
+
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.modal-agendamento-fechar:hover {
+  background-color: #f1f1f1;
+  color: #111;
+}
+
+/* Formulário */
+.modal-agendamento-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Cada campo do formulário */
+.modal-agendamento-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.modal-agendamento-campo label {
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Inputs e listas de seleção */
+.modal-agendamento-campo input,
+.modal-agendamento-campo select {
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+
+  padding: 11px 12px;
+
+  border: 1px solid #ccc;
+  border-radius: 7px;
+
+  background-color: #fff;
+  color: #222;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Destaque do campo selecionado */
+.modal-agendamento-campo input:focus,
+.modal-agendamento-campo select:focus {
+  border-color: #1769aa;
+  box-shadow: 0 0 0 3px rgba(23, 105, 170, 0.12);
+}
+
+/* Campos desabilitados durante o salvamento */
+.modal-agendamento-campo input:disabled,
+.modal-agendamento-campo select:disabled {
+  background-color: #f3f4f6;
+  color: #777;
+  cursor: not-allowed;
+}
+
+/* Informação sobre o status inicial */
+.modal-agendamento-status {
+  margin: 0;
+  padding: 12px;
+
+  border-radius: 7px;
+
+  background-color: #f1f5f9;
+  color: #475569;
+
+  font-size: 14px;
+}
+
+.modal-agendamento-status strong {
+  color: #9a6700;
+}
+
+/* Mensagem de erro */
+.modal-agendamento-erro {
+  margin: 0;
+  padding: 11px 12px;
+
+  border: 1px solid #fecaca;
+  border-radius: 7px;
+
+  background-color: #fef2f2;
+  color: #c62828;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Área dos botões */
+.modal-agendamento-acoes {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 6px;
+}
+
+/* Estilo compartilhado dos botões */
+.modal-agendamento-cancelar,
+.modal-agendamento-salvar {
+  min-height: 42px;
+  padding: 11px 16px;
+
+  border: none;
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+/* Botão cancelar */
+.modal-agendamento-cancelar {
+  background-color: #e5e7eb;
+  color: #333;
+}
+
+.modal-agendamento-cancelar:hover:not(:disabled) {
+  background-color: #d1d5db;
+}
+
+/* Botão salvar */
+.modal-agendamento-salvar {
+  background-color: #1769aa;
+  color: #fff;
+}
+
+.modal-agendamento-salvar:hover:not(:disabled) {
+  background-color: #10558b;
+}
+
+/* Efeito ao clicar nos botões */
+.modal-agendamento-cancelar:active:not(:disabled),
+.modal-agendamento-salvar:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Botões desabilitados */
+.modal-agendamento-cancelar:disabled,
+.modal-agendamento-salvar:disabled,
+.modal-agendamento-fechar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Animação do fundo */
+@keyframes modal-overlay-aparecer {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Animação da janela */
+@keyframes modal-caixa-aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Adaptação para celulares e telas menores */
+@media (max-width: 600px) {
+  .modal-agendamento-overlay {
+    padding: 12px;
+  }
+
+  .modal-agendamento {
+    max-height: 92vh;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .modal-agendamento-cabecalho {
+    margin-bottom: 20px;
+  }
+
+  .modal-agendamento-cabecalho h2 {
+    font-size: 20px;
+  }
+
+  .modal-agendamento-formulario {
+    gap: 15px;
+  }
+
+  .modal-agendamento-acoes {
+    flex-direction: column-reverse;
+  }
+
+  .modal-agendamento-cancelar,
+  .modal-agendamento-salvar {
+    width: 100%;
+  }
+}
+
+/* Respeita a preferência do usuário por menos animações */
+@media (prefers-reduced-motion: reduce) {
+  .modal-agendamento-overlay,
+  .modal-agendamento {
+    animation: none;
+  }
+
+  .modal-agendamento-campo input,
+  .modal-agendamento-campo select,
+  .modal-agendamento-fechar,
+  .modal-agendamento-cancelar,
+  .modal-agendamento-salvar {
+    transition: none;
+  }
+}
