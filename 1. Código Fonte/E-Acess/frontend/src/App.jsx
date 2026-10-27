@@ -2,6 +2,7 @@ import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 
 import Login from "./pages/Login/Login";
 import Agendamentos from "./pages/agendamentos/agendamentos";
+import CadastrarAgendamento from "./pages/cadastrarAgendamento/cadastrarAgendamento";
 
 function App() {
   const location = useLocation();
@@ -21,8 +22,11 @@ function App() {
         usuarioLogado ? <Agendamentos/> : <Navigate to ="/login" replace/>}/>
 
       {/*4. Qualquer rota não configurada redireciona para o login */}
-      <Route path="*" element={<Navigate to="/login" replace />}/>
-
+      <Route path="*" element={<Navigate to="/login" replace/>}/>
+      
+      {/* 5. Rota para direcionar para cadastro de agendamento */}
+      <Route path="/cadastrar-agendamento" element={<CadastrarAgendamento/>}
+/>
     </Routes>
   );
 }
