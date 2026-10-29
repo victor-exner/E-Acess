@@ -1,17 +1,25 @@
 package com.example.eacess.controller;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.eacess.dto.LoginRequest;
 import com.example.eacess.dto.LoginResponse;
 import com.example.eacess.model.Usuario;
 import com.example.eacess.service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Map;
 
 @RestController 
 @RequestMapping("/usuarios")
@@ -72,7 +80,7 @@ public class UsuarioController {
             LoginResponse resposta = new LoginResponse(
                 usuarioAutenticado.getId(),
                 usuarioAutenticado.getLogin(),
-                usuarioAutenticado.isAdm()
+                usuarioAutenticado.getSetor()
             );
 
         return ResponseEntity.ok(resposta);

@@ -4,10 +4,12 @@ import { useNavigate } from "react-router-dom";
 function CadastrarAgendamento() {
   const navigate = useNavigate();
 
+  const [tipoAgendamento, setTipoAgendamento] = useState("");
   const [data, setData] = useState("");
   const [transportadoraId, setTransportadoraId] = useState("");
   const [motoristaId, setMotoristaId] = useState("");
   const [placa, setPlaca] = useState("");
+  const [frete, setFrete] = useState("");
 
   const [transportadoras, setTransportadoras] = useState([]);
   const [motoristas, setMotoristas] = useState([]);
@@ -77,6 +79,7 @@ function CadastrarAgendamento() {
       },
       placa: placa.trim().toUpperCase(),
       status: "PENDENTE",
+      coleta: tipoAgendamento === "expedicao"
     };
 
     try {
@@ -240,10 +243,39 @@ function CadastrarAgendamento() {
               />
             </div>
 
+            <div className="novo-agendamento-campo">
+              <label htmlFor="tipo-agendamento">
+                Tipo do agendamento
+              </label>
+
+              <select
+                id="tipo-agendamento"
+                value={tipoAgendamento}
+                onChange={(event) =>
+                  setTipoAgendamento(event.target.value)
+                }
+                required
+                disabled={salvando}
+              >
+                <option value="">
+                  Selecione o tipo do agendamento
+                </option>
+
+                <option value="recebimento">
+                  Recebimento
+                </option>
+
+                <option value="expedicao">
+                  Expedição
+                </option>
+              </select>
+            </div>
+
             <div className="novo-agendamento-status">
               Status inicial: <strong>Pendente</strong>
             </div>
 
+            
             {mensagemErro && (
               <p
                 className="novo-agendamento-erro"
