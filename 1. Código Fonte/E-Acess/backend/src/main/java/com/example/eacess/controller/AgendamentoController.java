@@ -3,6 +3,7 @@ package com.example.eacess.controller;
 import com.example.eacess.model.Agendamento;
 import com.example.eacess.model.Status;
 import com.example.eacess.service.AgendamentoService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,33 @@ public class AgendamentoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(novAgendamento);
     }
 
-    // 4. Excluir agendamento por ID
+    // 4. Atualizando agendamento existente
+    @PutMapping("/{id}")
+    public ResponseEntity<Agendamento> atualizar(
+        @PathVariable int id, @RequestBody Agendamento dadosAtualizados){
+
+        Optional<Agendamento> agendamentoExistente = agendamentoService.buscarPorId(id);
+
+        if(agendamentoExistente.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Agendamento agendamento = agendamentoExistente.get();
+
+        agendamento.setData(dadosAtualizados.getData());
+        agendamento.setTransportadora(dadosAtualizados.getTransportadora());
+        agendamento.setMotorista(dadosAtualizados.getMotorista());
+        agendamento.setPlaca(dadosAtualizados.getPlaca());
+        agendamento.setDescricao(dadosAtualizados.getDescricao());
+        agendamento.setStatus(dadosAtualizados.getStatus());
+        agendamento.setColeta(dadosAtualizados.isColeta());
+
+        Agendamento atualizado = agendamentoService.salvar(agendamento);
+
+        return ResponseEntity.ok(atualizado);
+        }
+
+    // 5. Excluir agendamento por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable int id) {
         Optional<Agendamento> agendamento = agendamentoService.buscarPorId(id);

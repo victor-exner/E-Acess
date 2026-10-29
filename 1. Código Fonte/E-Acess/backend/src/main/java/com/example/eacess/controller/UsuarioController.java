@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.eacess.dto.LoginRequest;
-import com.example.eacess.dto.LoginResponse;
 import com.example.eacess.model.Usuario;
 import com.example.eacess.service.UsuarioService;
 
@@ -28,19 +26,29 @@ public class UsuarioController {
     @Autowired 
     private UsuarioService usuarioService;
 
+    // Puxando somente dados publicos da classe usuário (nao puxa senha)
+    private Map<String, Object> dadosPublicos(Usuario usuario){
+        return Map.of(
+            "id", usuario.getId(),
+            "login", usuario.getLogin(),
+            "setor", usuario.getSetor()
+        );
+    }
+
     // 1. Listar todos usuários (GET: http://localhost:8080/usuarios)
     @GetMapping
-    public List<Usuario> listarTodos(){
-        return usuarioService.listarTodos();
+    public List<Map<String, Object>> listarTodos(){
+        return usuarioService.listarTodos()
+        .stream().map(this::dadosPublicos).toList();
     }
 
     // 2. Buscar usuário por ID (GET: http://localhost:8080/usuarios/1)
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable  int id){
+    public ResponseEntity<Map<String, Object>> buscarPorId(@PathVariable  int id){
         Optional<Usuario> usuario = usuarioService.buscarPorId(id);
 
         if (usuario.isPresent()) {
-            return ResponseEntity.ok(usuario.get());
+            return ResponseEntity.ok(dadosPublicos(usuario.get()));
         }
         return ResponseEntity.notFound().build();
     }
@@ -59,13 +67,22 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-    // 4. Autenticando usuário
+    // 4. Cadastrando usuário
+    @PostMapping
+    public ResponseEntity<?> cadastrar(@RequestBody Usuario usuario) {
+        Usuario novoUsuario = usuarioService.salvar(usuario);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(dadosPublicos(novoUsuario));
+    }
+
+    // 5. Autenticando usuário
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest dados){
+    public ResponseEntity<?> login(@RequestBody Usuario dados){
         if(dados.getLogin() == null
         || dados.getSenha() == null
-        || dados.getLogin() == null
-        || dados.getSenha().isEmpty()){
+        || dados.getLogin().isBlank()
+        || dados.getSenha().isBlank()){
             
             return ResponseEntity.badRequest().body(Map.of("mensagem",
                 "Informe o login e a senha!"));
@@ -75,18 +92,10 @@ public class UsuarioController {
             dados.getLogin().trim(), dados.getSenha());
 
         if(usuario.isPresent()){
-            Usuario usuarioAutenticado = usuario.get();
-
-            LoginResponse resposta = new LoginResponse(
-                usuarioAutenticado.getId(),
-                usuarioAutenticado.getLogin(),
-                usuarioAutenticado.getSetor()
-            );
-
-        return ResponseEntity.ok(resposta);
+            return ResponseEntity.ok(dadosPublicos(usuario.get()));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("mensagem", "Login ou Senha inválidas!"));
+            .body(Map.of("mensagem", "Login ou Senha inválidas!"));
     }
 }
