@@ -9,7 +9,7 @@ function CadastrarAgendamento() {
   const [transportadoraId, setTransportadoraId] = useState("");
   const [motoristaId, setMotoristaId] = useState("");
   const [placa, setPlaca] = useState("");
-  const [frete, setFrete] = useState("");
+  const [descricao, setDescricao] = useState("");
 
   const [transportadoras, setTransportadoras] = useState([]);
   const [motoristas, setMotoristas] = useState([]);
@@ -79,7 +79,8 @@ function CadastrarAgendamento() {
       },
       placa: placa.trim().toUpperCase(),
       status: "PENDENTE",
-      coleta: tipoAgendamento === "expedicao"
+      coleta: tipoAgendamento === "expedicao",
+      descricao: descricao.trim()
     };
 
     try {
@@ -132,16 +133,9 @@ function CadastrarAgendamento() {
               Preencha os campos abaixo para cadastrar um novo agendamento.
             </p>
           </div>
-
-          <button
-            type="button"
-            className="novo-agendamento-voltar"
-            onClick={cancelarCadastro}
-          >
-            Voltar
-          </button>
         </header>
 
+      {/* Exibindo campos de cadastro de agendamento */}
         {carregando ? (
           <p className="novo-agendamento-carregando">
             Carregando transportadoras e motoristas...
@@ -273,6 +267,22 @@ function CadastrarAgendamento() {
 
             <div className="novo-agendamento-status">
               Status inicial: <strong>Pendente</strong>
+            </div>
+
+            <div className="novo-agendamento-campo novo-agendamento-descricao">
+              <label htmlFor="descricao-agendamento">
+                Descrição
+              </label>
+
+              <textarea
+                id="descricao-agendamento"
+                value={descricao}
+                onChange={(event) => setDescricao(event.target.value)}
+                placeholder="Descreva os detalhes do agendamento..."
+                rows={4}
+                maxLength={2000}
+                disabled={salvando}
+              />
             </div>
 
             

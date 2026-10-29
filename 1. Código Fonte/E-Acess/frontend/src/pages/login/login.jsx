@@ -1,6 +1,7 @@
+import "./login.css";
 import {useState} from "react";
 import { useNavigate } from "react-router-dom";
-import "./login.css";
+import Navbar from "../../components/navbar/navbar";
 
 function Login(){
     const [login, setLogin] = useState("");
@@ -55,7 +56,8 @@ function Login(){
     }
 
     return(
-        <>
+    <>
+        <Navbar/>
         <main className="login-container">
             <div className="login-card">
                 <h1 className="login-title">E-Acess - Login</h1>
@@ -79,7 +81,7 @@ function Login(){
                 )}
             </div>
         </main>
-        </>
+    </>
     )
 }
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/navbar/navbar";
 import "./agendamentos.css";
 
 function Agendamentos() {
@@ -130,6 +131,7 @@ function Agendamentos() {
 
   return (
     <main className="agendamentos-container">
+      <Navbar/>
       {/* Cabeçalho da página de agendamento */}
       <header className="agendamentos-cabecalho">
         <h1>Agendamentos</h1>
@@ -290,14 +292,16 @@ function Agendamentos() {
                   <th>Transportadora</th>
                   <th>Motorista</th>
                   <th>Placa</th>
-                  <th>Status</th>
                   <th>Tipo Agendamento</th>
+                  <th>Status</th>
                 </tr>
               </thead>
 
               <tbody>
                 {agendamentosFiltrados.map((agendamento) => (
-                  <tr key={agendamento.id}>
+                  <tr key={agendamento.id} className="agendamento-clicavel" onClick={() => 
+                  navigate(`/editar-agendamento/${agendamento.id}`)}>
+
                     <td>{agendamento.id}</td>
                     <td>{agendamento.data || "—"}</td>
                     <td>{agendamento.transportadora?.nome || "—"}</td>
@@ -305,6 +309,7 @@ function Agendamentos() {
                     <td>{agendamento.placa || "—"}</td>
                     <td>{agendamento.coleta === true ? "Expedição" : agendamento.coleta === false ? "Recebimento" : "-"}</td>
                     <td>{String(agendamento.status ?? "—").replaceAll("_"," ")}</td>
+
                   </tr>
                 ))}
               </tbody>

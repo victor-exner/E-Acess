@@ -1,0 +1,7 @@
+.agendamentos-container{
+    background-color: red;
+}
+
+.agendamento-clicavel{
+    cursor: pointer;
+}
