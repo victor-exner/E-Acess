@@ -1,15 +1,17 @@
 package com.example.eacess.dto;
 
+import com.example.eacess.model.Setor;
+
 public class LoginResponse {
 
-    private int id;
-    private String login;
-    private boolean adm;
+    private final int id;
+    private final String login;
+    private final Setor setor;
 
-    public LoginResponse(int id, String login, boolean adm) {
+    public LoginResponse(int id, String login, Setor setor) {
         this.id = id;
         this.login = login;
-        this.adm = adm;
+        this.setor = setor;
     }
 
     public int getId() {
@@ -20,7 +22,7 @@ public class LoginResponse {
         return login;
     }
 
-    public boolean isAdm() {
-        return adm;
+    public Setor getSetor() {
+        return setor;
     }
 }

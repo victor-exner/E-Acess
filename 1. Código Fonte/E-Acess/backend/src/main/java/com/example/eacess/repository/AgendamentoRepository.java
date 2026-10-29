@@ -1,11 +1,12 @@
 package com.example.eacess.repository;
 
-import com.example.eacess.model.Agendamento;
-import com.example.eacess.model.Status;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.eacess.model.Agendamento;
+import com.example.eacess.model.Status;
 
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Integer>{
     List<Agendamento> findByData(LocalDate data);

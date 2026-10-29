@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./agendamentos.css";
 
@@ -17,7 +17,8 @@ function Agendamentos() {
     transportadora: "",
     motorista: "",
     placa: "",
-    status: "",
+    tipoAgendamento: "",
+    status: ""
   });
 
   // Declarando constantes para "espera da página" e mensagens de erro
@@ -77,6 +78,9 @@ function Agendamentos() {
       const correspondeStatus = String(agendamento.status ?? "")
           .toLowerCase()
           .includes(filtros.status.trim().toLowerCase());
+      const correspondeTipo = filtros.tipoAgendamento === "" ||
+          (filtros.tipoAgendamento === "expedicao" && agendamento.coleta === true) ||
+          (filtros.tipoAgendamento === "recebimento" && agendamento.coleta === false);
 
       return (
         correspondeId &&
@@ -84,6 +88,7 @@ function Agendamentos() {
         correspondeTransportadora &&
         correspondeMotorista &&
         correspondePlaca &&
+        correspondeTipo &&
         correspondeStatus
       );
     });
@@ -99,7 +104,8 @@ function Agendamentos() {
       transportadora: "",
       motorista: "",
       placa: "",
-      status: "",
+      tipoAgendamento: "",
+      status: ""
     });
 
     setAgendamentosFiltrados(agendamentos);
@@ -207,6 +213,23 @@ function Agendamentos() {
             </div>
 
             <div className="agendamentos-campo">
+              <label htmlFor="filtro-tipo-agendamento">
+                Tipo do agendamento
+              </label>
+
+              <select
+                id="filtro-tipo-agendamento"
+                name="tipoAgendamento"
+                value={filtros.tipoAgendamento}
+                onChange={atualizarFiltro}
+              >
+                <option value="">Todos</option>
+                <option value="expedicao">Expedição</option>
+                <option value="recebimento">Recebimento</option>
+              </select>
+            </div>
+
+            <div className="agendamentos-campo">
               <label htmlFor="filtro-status">Status</label>
               <input
                 id="filtro-status"
@@ -268,6 +291,7 @@ function Agendamentos() {
                   <th>Motorista</th>
                   <th>Placa</th>
                   <th>Status</th>
+                  <th>Tipo Agendamento</th>
                 </tr>
               </thead>
 
@@ -276,17 +300,11 @@ function Agendamentos() {
                   <tr key={agendamento.id}>
                     <td>{agendamento.id}</td>
                     <td>{agendamento.data || "—"}</td>
-                    <td>
-                      {agendamento.transportadora?.nome || "—"}
-                    </td>
+                    <td>{agendamento.transportadora?.nome || "—"}</td>
                     <td>{agendamento.motorista?.nome || "—"}</td>
                     <td>{agendamento.placa || "—"}</td>
-                    <td>
-                      {String(agendamento.status ?? "—").replaceAll(
-                        "_",
-                        " "
-                      )}
-                    </td>
+                    <td>{agendamento.coleta === true ? "Expedição" : agendamento.coleta === false ? "Recebimento" : "-"}</td>
+                    <td>{String(agendamento.status ?? "—").replaceAll("_"," ")}</td>
                   </tr>
                 ))}
               </tbody>

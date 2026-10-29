@@ -1,6 +1,11 @@
 package com.example.eacess.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity 
 @Table(name = "fretes")
@@ -9,15 +14,17 @@ public class Frete{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, length = 64)
-    private String origem;
-
-    @Column(nullable = false, length = 64)
-    private String destino;
-
     @Column(nullable = false)
     private Double peso;
 
+    @Column(nullable = false)
+    private String dimensao;
+
+    @Column(nullable = false)
+    private Double distancia;
+
+    @Column(nullable = false)
+    private Double valor;
 
     // Getters e Setters
     public int getId() {
@@ -26,22 +33,6 @@ public class Frete{
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getOrigem() {
-        return origem;
-    }
-
-    public void setOrigem(String origem) {
-        this.origem = origem;
-    }
-
-    public String getDestino() {
-        return destino;
-    }
-
-    public void setDestino(String destino) {
-        this.destino = destino;
     }
 
     public Double getPeso() {
@@ -75,13 +66,4 @@ public class Frete{
     public void setValor(Double valor) {
         this.valor = valor;
     }
-
-    @Column(nullable = false)
-    private Double distancia;
-
-    @Column(nullable = false)
-    private String dimensao;
-
-    @Column(nullable = false)
-    private Double valor;
 }

@@ -1,6 +1,13 @@
 package com.example.eacess.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "usuarios")
@@ -15,7 +22,9 @@ public class Usuario{
     @Column(nullable = false)
     private String senha;
 
-    private boolean adm = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Setor setor;
 
 // Getters e Setters
     public int getId() {
@@ -42,11 +51,12 @@ public class Usuario{
         this.senha = senha;
     }
 
-    public boolean isAdm() {
-        return adm;
+    public Setor getSetor(){
+        return setor;
     }
 
-    public void setAdm(boolean adm) {
-        this.adm = adm;
+    public void setSetor(Setor setor){
+        this.setor = setor;
     }
+    
 }
