@@ -1,5 +1,6 @@
 import {useNavigate } from "react-router-dom";
 import "./navbar.css";
+import logo from "../../assets/logo.png";
 
 function Navbar() {
 
@@ -20,19 +21,21 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="logo">
-        <h1>logo aqui</h1>
+        <img src={logo} alt="" className="logo-img"/>
       </div>
 
       <div className="menu">
 
         {usuarioLogado ?(
           <>
-          <button className="menu-links" onClick={()=> navigate("/agendamentos")}>Home</button>
-          <button className="menu-links" onClick={sair}>Sair</button>
+          <div className="navbar-btn-container">
+            <button className="navbar-btn" onClick={()=> navigate("/agendamentos")}>Home</button>
+            <button className="navbar-btn" onClick={sair}>Sair</button>
+          </div>
           </>
         ):(
           <>
-          <h1>Bem vindo</h1>
+          <h1 className="span-navbar">{"Bem vindo(a)!"}</h1>
           </>
         )}
       </div>

@@ -76,9 +76,8 @@ function Agendamentos() {
       const correspondePlaca = String(agendamento.placa ?? "")
           .toLowerCase()
           .includes(filtros.placa.trim().toLowerCase());
-      const correspondeStatus = String(agendamento.status ?? "")
-          .toLowerCase()
-          .includes(filtros.status.trim().toLowerCase());
+      const correspondeStatus = filtros.status === "" ||
+          agendamento.status === filtros.status;
       const correspondeTipo = filtros.tipoAgendamento === "" ||
           (filtros.tipoAgendamento === "expedicao" && agendamento.coleta === true) ||
           (filtros.tipoAgendamento === "recebimento" && agendamento.coleta === false);
@@ -130,141 +129,123 @@ function Agendamentos() {
   }
 
   return (
-    <main className="agendamentos-container">
+  <main className="agendamentos-container">
       <Navbar/>
       {/* Cabeçalho da página de agendamento */}
+    
+    <div className="container-principal">
       <header className="agendamentos-cabecalho">
-        <h1>Agendamentos</h1>
-        <p>
-          Consulte os agendamentos cadastrados e utilize os filtros
-          para encontrar os registros desejados.
-        </p>
+        <h1 className="agendamentos-title">Agendamentos</h1>
 
-        <button type="button" className="botao-novo-agendamento" onClick={() => 
+        <button type="button" className="btn-novo-agendamento" onClick={() => 
           navigate("/cadastrar-agendamento")}>+ Novo agendamento
         </button>
         
       </header>
 
-    {/* Container Filtros */}
-      <section className="agendamentos-filtros">
-        <h2>Pesquisar agendamentos</h2>
+      <hr></hr>
 
-        <form onSubmit={filtrarAgendamentos}>
-          <div className="agendamentos-filtros-grid">
-            <div className="agendamentos-campo">
-              <label htmlFor="filtro-id">ID</label>
+    {/* Container Filtros */}
+    <section className="filtros-container">
+      <form onSubmit={filtrarAgendamentos} className="form-filtros">
+        <div className="filtro-card">
+          <div className="filtro-campo">
+            <label htmlFor="filtro-id">ID</label>
               <input
                 id="filtro-id"
                 name="id"
                 type="text"
                 inputMode="numeric"
-                placeholder="ID do agendamento"
+                placeholder="ID do Agendamento"
                 value={filtros.id}
-                onChange={atualizarFiltro}
-              />
-            </div>
+                onChange={atualizarFiltro}/>
+          </div>
 
-            <div className="agendamentos-campo">
-              <label htmlFor="filtro-data">Data</label>
+          <div className="filtro-campo">
+            <label htmlFor="filtro-data">Data</label>
               <input
                 id="filtro-data"
                 name="data"
                 type="date"
                 value={filtros.data}
-                onChange={atualizarFiltro}
-              />
-            </div>
+                onChange={atualizarFiltro}/>
+          </div>
 
-            <div className="agendamentos-campo">
-              <label htmlFor="filtro-transportadora">
-                Transportadora
-              </label>
+          <div className="filtro-campo">
+            <label htmlFor="filtro-transportadora">Transportadora</label>
               <input
                 id="filtro-transportadora"
                 name="transportadora"
                 type="text"
-                placeholder="Nome da transportadora"
+                placeholder="Transportadora"
                 value={filtros.transportadora}
-                onChange={atualizarFiltro}
-              />
-            </div>
+                onChange={atualizarFiltro}/>
+          </div>
 
-            <div className="agendamentos-campo">
-              <label htmlFor="filtro-motorista">Motorista</label>
+          <div className="filtro-campo">
+            <label htmlFor="filtro-motorista">Motorista</label>
               <input
                 id="filtro-motorista"
                 name="motorista"
                 type="text"
-                placeholder="Nome do motorista"
+                placeholder="Motorista"
                 value={filtros.motorista}
-                onChange={atualizarFiltro}
-              />
+                onChange={atualizarFiltro}/>
             </div>
 
-            <div className="agendamentos-campo">
-              <label htmlFor="filtro-placa">Placa</label>
+          <div className="filtro-campo">
+            <label htmlFor="filtro-placa">Placa</label>
               <input
                 id="filtro-placa"
                 name="placa"
                 type="text"
-                placeholder="Placa do veículo"
+                placeholder="Placa do Veículo"
                 value={filtros.placa}
-                onChange={atualizarFiltro}
-              />
-            </div>
+                onChange={atualizarFiltro}/>
+          </div>
 
-            <div className="agendamentos-campo">
-              <label htmlFor="filtro-tipo-agendamento">
-                Tipo do agendamento
-              </label>
-
+          <div className="filtro-campo">
+            <label htmlFor="filtro-tipo-agendamento">Tipo</label>
               <select
                 id="filtro-tipo-agendamento"
                 name="tipoAgendamento"
                 value={filtros.tipoAgendamento}
-                onChange={atualizarFiltro}
-              >
+                onChange={atualizarFiltro}>
                 <option value="">Todos</option>
                 <option value="expedicao">Expedição</option>
                 <option value="recebimento">Recebimento</option>
               </select>
-            </div>
+          </div>
 
-            <div className="agendamentos-campo">
-              <label htmlFor="filtro-status">Status</label>
-              <input
+          <div className="filtro-campo">
+            <label htmlFor="filtro-status">Status</label>
+              <select 
+                name="status" 
                 id="filtro-status"
-                name="status"
-                type="text"
-                placeholder="Ex.: pendente"
                 value={filtros.status}
-                onChange={atualizarFiltro}
-              />
-            </div>
+                onChange={atualizarFiltro}>
+                <option value="">Todos</option>
+                <option value="ANDAMENTO">Andamento</option>
+                <option value="PENDENTE">Pendente</option>
+                <option value="CONCLUIDO">Concluído</option>
+              </select>
           </div>
 
-          <div className="agendamentos-acoes-filtro">
-            <button type="submit" className="botao-filtrar">
-              Filtrar
+          <div className="filtro-btns-container">
+            <button type="submit" className="filtro-btns">Filtrar</button>
+
+            <button type="button" className="filtro-btns" onClick={limparFiltros}>
+              Limpar
             </button>
 
-            <button
-              type="button"
-              className="botao-limpar"
-              onClick={limparFiltros}
-            >
-              Limpar filtros
-            </button>
           </div>
-        </form>
-      </section>
+        </div>
+      </form>
+    </section>
 
     {/* Container Agendamentos */}
-      <section className="agendamentos-tabela-container">
+      <section className="agendamentos-lista">
         <div className="agendamentos-tabela-cabecalho">
-          <h2>Lista de agendamentos</h2>
-
           <span className="agendamentos-contagem">
             {agendamentosFiltrados.length} registro(s)
           </span>
@@ -283,41 +264,43 @@ function Agendamentos() {
             Nenhum agendamento encontrado com os filtros informados.
           </p>
         ) : (
+        <table className="agendamentos-tabela">
+          <thead>
+            <tr className="labels-container">
+              <th className="agendamentos-labels"
+              style={{paddingLeft: "10px"}}>ID</th>
+              <th className="agendamentos-labels">Data</th>
+              <th className="agendamentos-labels">Transportadora</th>
+              <th className="agendamentos-labels">Motorista</th>
+              <th className="agendamentos-labels">Placa</th>
+              <th className="agendamentos-labels">Tipo</th>
+              <th className="agendamentos-labels">Status</th>
+            </tr>
+          </thead>
+
           <div className="agendamentos-tabela-scroll">
-            <table className="agendamentos-tabela">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Data</th>
-                  <th>Transportadora</th>
-                  <th>Motorista</th>
-                  <th>Placa</th>
-                  <th>Tipo Agendamento</th>
-                  <th>Status</th>
+            <tbody>
+              {agendamentosFiltrados.map((agendamento) => (
+                <tr key={agendamento.id} className="agendamento-linha" onClick={() => 
+                navigate(`/editar-agendamento/${agendamento.id}`)}>
+                  <td className="agendamentos-items"
+                  style={{paddingLeft: "6px"}}>{agendamento.id}</td>
+                  <td className="agendamentos-items">{agendamento.data || "—"}</td>
+                  <td className="agendamentos-items">{agendamento.transportadora?.nome || "—"}</td>
+                  <td className="agendamentos-items">{agendamento.motorista?.nome || "—"}</td>
+                  <td className="agendamentos-items">{agendamento.placa || "—"}</td>
+                  <td className="agendamentos-items">{agendamento.coleta === true ? "Expedição" : agendamento.coleta === false ? "Recebimento" : "-"}</td>
+                  <td className="agendamentos-items">
+                  {String(agendamento.status ?? "—").replaceAll("_"," ")}</td>
                 </tr>
-              </thead>
-
-              <tbody>
-                {agendamentosFiltrados.map((agendamento) => (
-                  <tr key={agendamento.id} className="agendamento-clicavel" onClick={() => 
-                  navigate(`/editar-agendamento/${agendamento.id}`)}>
-
-                    <td>{agendamento.id}</td>
-                    <td>{agendamento.data || "—"}</td>
-                    <td>{agendamento.transportadora?.nome || "—"}</td>
-                    <td>{agendamento.motorista?.nome || "—"}</td>
-                    <td>{agendamento.placa || "—"}</td>
-                    <td>{agendamento.coleta === true ? "Expedição" : agendamento.coleta === false ? "Recebimento" : "-"}</td>
-                    <td>{String(agendamento.status ?? "—").replaceAll("_"," ")}</td>
-
-                  </tr>
                 ))}
-              </tbody>
-            </table>
+            </tbody>
           </div>
+        </table>
         )}
       </section>
-    </main>
+    </div>
+  </main>
   );
 }
 

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/navbar/navbar";
+import "./cadastrarAgendamentos.css";
 
 function CadastrarAgendamento() {
   const navigate = useNavigate();
@@ -122,208 +124,153 @@ function CadastrarAgendamento() {
   }
 
   return (
-    <main className="novo-agendamento-pagina">
-      <section className="novo-agendamento-container">
+    <main className="novo-agendamento-container">
+      <Navbar/>
+      <section className="novo-agendamento-card">
 
         <header className="novo-agendamento-cabecalho">
           <div>
-            <h1>Novo agendamento</h1>
-
-            <p>
-              Preencha os campos abaixo para cadastrar um novo agendamento.
-            </p>
+            <h1 className="novo-agendamento-title">Novo agendamento</h1>
           </div>
         </header>
 
-      {/* Exibindo campos de cadastro de agendamento */}
+        {/* Exibindo campos de cadastro de agendamento */}
         {carregando ? (
           <p className="novo-agendamento-carregando">
             Carregando transportadoras e motoristas...
           </p>
         ) : (
-          <form
-            className="novo-agendamento-formulario"
-            onSubmit={salvarAgendamento}
-          >
+          
+          // INICIO FORMULARIO DE CADASTRO DE AGENDAMENTO
+          <form className="novo-agendamento-form" onSubmit={salvarAgendamento}>
+            
+        <div className="row1">
+            {/* CAMPO DATA */}
             <div className="novo-agendamento-campo">
-              <label htmlFor="data-agendamento">
-                Data do agendamento
-              </label>
+              <label htmlFor="data-agendamento">Data do agendamento</label>
 
               <input
-                type="date"
-                id="data-agendamento"
-                value={data}
+                type="date" id="data-agendamento" value={data}
                 onChange={(event) => setData(event.target.value)}
-                required
-                disabled={salvando}
-              />
+                required disabled={salvando}/>
             </div>
 
+
+            {/* CAMPO TRANSPORTADORA */}
             <div className="novo-agendamento-campo">
-              <label htmlFor="transportadora-agendamento">
-                Transportadora
-              </label>
+              <label htmlFor="transportadora-agendamento">Transportadora</label>
 
               <select
-                id="transportadora-agendamento"
-                value={transportadoraId}
+                id="transportadora-agendamento" value={transportadoraId}
                 onChange={(event) =>
-                  setTransportadoraId(event.target.value)
-                }
-                required
-                disabled={salvando}
-              >
-                <option value="">
-                  Selecione uma transportadora
-                </option>
+                setTransportadoraId(event.target.value)}
+                required disabled={salvando}>
+                <option value="">Selecione uma transportadora</option>
 
                 {transportadoras.map((transportadora) => (
-                  <option
-                    key={transportadora.id}
-                    value={transportadora.id}
-                  >
+                  <option key={transportadora.id} value={transportadora.id}>
                     {transportadora.nome}
-                  </option>
-                ))}
+                  </option>))}
               </select>
             </div>
 
+
+            {/* CAMPO MOTORISTA */}
             <div className="novo-agendamento-campo">
-              <label htmlFor="motorista-agendamento">
-                Motorista
-              </label>
+              <label htmlFor="motorista-agendamento">Motorista</label>
 
               <select
-                id="motorista-agendamento"
-                value={motoristaId}
+                id="motorista-agendamento" value={motoristaId}
                 onChange={(event) =>
-                  setMotoristaId(event.target.value)
-                }
-                required
-                disabled={salvando}
-              >
-                <option value="">
-                  Selecione um motorista
-                </option>
+                setMotoristaId(event.target.value)}
+                required disabled={salvando}>
+
+                <option value="">Selecione um motorista</option>
 
                 {motoristas.map((motorista) => (
-                  <option
-                    key={motorista.id}
-                    value={motorista.id}
-                  >
+                  <option key={motorista.id} value={motorista.id}>
                     {motorista.nome}
-                  </option>
-                ))}
+                  </option>))}
               </select>
             </div>
 
+
+            {/* CAMPO PLACA */}
             <div className="novo-agendamento-campo">
-              <label htmlFor="placa-agendamento">
-                Placa do veículo
-              </label>
+              <label htmlFor="placa-agendamento">Placa do veículo</label>
 
               <input
-                type="text"
-                id="placa-agendamento"
-                placeholder="Ex.: ABC1D23"
-                value={placa}
+                type="text" id="placa-agendamento"
+                placeholder="Ex.: ABC1D23" value={placa}
                 onChange={(event) =>
-                  setPlaca(event.target.value.toUpperCase())
-                }
-                maxLength={10}
-                required
-                disabled={salvando}
-              />
+                setPlaca(event.target.value.toUpperCase())}
+                maxLength={10} required disabled={salvando}/>
             </div>
+          </div>
 
+          <div className="row2">
+            {/* CAMPO TIPO AGENDAMENTO */}
             <div className="novo-agendamento-campo">
-              <label htmlFor="tipo-agendamento">
-                Tipo do agendamento
-              </label>
+              <label htmlFor="tipo-agendamento">Tipo do agendamento</label>
 
               <select
                 id="tipo-agendamento"
                 value={tipoAgendamento}
-                onChange={(event) =>
-                  setTipoAgendamento(event.target.value)
-                }
-                required
-                disabled={salvando}
-              >
-                <option value="">
-                  Selecione o tipo do agendamento
-                </option>
+                onChange={(event) => setTipoAgendamento(event.target.value)}
+                required disabled={salvando}>
 
-                <option value="recebimento">
-                  Recebimento
-                </option>
-
-                <option value="expedicao">
-                  Expedição
-                </option>
+                <option value="">Selecione o tipo do agendamento</option>
+                <option value="recebimento">Recebimento</option>
+                <option value="expedicao">Expedição</option>
               </select>
             </div>
 
+            {/* CAMPO STATUS */}
             <div className="novo-agendamento-status">
-              Status inicial: <strong>Pendente</strong>
+              <label htmlFor="">Status Inicial: </label><p>Pendente</p>
             </div>
 
-            <div className="novo-agendamento-campo novo-agendamento-descricao">
-              <label htmlFor="descricao-agendamento">
-                Descrição
-              </label>
+                  
+            {/* CAMPO DESCRIÇÃO  */}
+            <div className="novo-agendamento-campo">
+              <label htmlFor="descricao-agendamento">Descrição</label>
 
               <textarea
                 id="descricao-agendamento"
                 value={descricao}
                 onChange={(event) => setDescricao(event.target.value)}
                 placeholder="Descreva os detalhes do agendamento..."
-                rows={4}
-                maxLength={2000}
-                disabled={salvando}
-              />
+                rows={7} maxLength={2000} disabled={salvando}/>
             </div>
+          </div>
 
-            
-            {mensagemErro && (
-              <p
-                className="novo-agendamento-erro"
-                role="alert"
-              >
+            {/* CAMPO MENSAGENS DE RETORNO */}
+            {mensagemErro &&(
+              <p className="novo-agendamento-erro" role="alert">
                 {mensagemErro}
               </p>
             )}
 
-            {mensagemSucesso && (
-              <p
-                className="novo-agendamento-sucesso"
-                role="status"
-              >
+            {mensagemSucesso &&(
+              <p className="novo-agendamento-sucesso" role="status">
                 {mensagemSucesso}
               </p>
             )}
 
-            <div className="novo-agendamento-acoes">
-              <button
-                type="button"
-                className="novo-agendamento-cancelar"
+            {/* CAMPO BOTÕES */}
+            <div className="novoAgendamento-btns-container">
+              <button type="button" className="novoAgendamento-btns"  
                 onClick={cancelarCadastro}
-                disabled={salvando}
-              >
+                disabled={salvando}>
                 Cancelar
               </button>
 
-              <button
-                type="submit"
-                className="novo-agendamento-salvar"
-                disabled={salvando}
-              >
-                {salvando
-                  ? "Salvando..."
-                  : "Salvar agendamento"}
+              <button type="submit" className="novoAgendamento-btns"         
+                disabled={salvando}>
+                {salvando ? "Salvando..." : "Salvar agendamento"}
               </button>
             </div>
+
           </form>
         )}
       </section>

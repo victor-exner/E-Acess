@@ -57,10 +57,10 @@ function Login(){
 
     return(
     <>
-        <Navbar/>
         <main className="login-container">
+            <Navbar/>
             <div className="login-card">
-                <h1 className="login-title">E-Acess - Login</h1>
+                <h1 className="login-title">Login</h1>
 
                 <form onSubmit={acessar} className="login-form">
                     <input type="text" id="login" name="login" placeholder="Digite seu Usuário"
