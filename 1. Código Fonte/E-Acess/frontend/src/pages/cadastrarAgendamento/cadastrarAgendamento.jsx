@@ -1,0 +1,281 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/navbar/navbar";
+import "./cadastrarAgendamentos.css";
+
+function CadastrarAgendamento() {
+  const navigate = useNavigate();
+
+  const [tipoAgendamento, setTipoAgendamento] = useState("");
+  const [data, setData] = useState("");
+  const [transportadoraId, setTransportadoraId] = useState("");
+  const [motoristaId, setMotoristaId] = useState("");
+  const [placa, setPlaca] = useState("");
+  const [descricao, setDescricao] = useState("");
+
+  const [transportadoras, setTransportadoras] = useState([]);
+  const [motoristas, setMotoristas] = useState([]);
+
+  const [carregando, setCarregando] = useState(true);
+  const [salvando, setSalvando] = useState(false);
+
+  const [mensagemErro, setMensagemErro] = useState("");
+  const [mensagemSucesso, setMensagemSucesso] = useState("");
+
+  // Carrega as transportadoras e os motoristas
+  useEffect(() => {
+    async function carregarOpcoes() {
+      try {
+        const [
+          respostaTransportadoras,
+          respostaMotoristas,
+        ] = await Promise.all([
+          fetch("http://localhost:8080/transportadoras"),
+          fetch("http://localhost:8080/motoristas"),
+        ]);
+
+        if (
+          !respostaTransportadoras.ok ||
+          !respostaMotoristas.ok
+        ) {
+          throw new Error(
+            "Não foi possível carregar as transportadoras e os motoristas."
+          );
+        }
+
+        const dadosTransportadoras =
+          await respostaTransportadoras.json();
+
+        const dadosMotoristas =
+          await respostaMotoristas.json();
+
+        setTransportadoras(dadosTransportadoras);
+        setMotoristas(dadosMotoristas);
+      } catch (erro) {
+        setMensagemErro(
+          "Erro ao carregar os dados. Verifique o backend e a configuração de CORS."
+        );
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    carregarOpcoes();
+  }, []);
+
+  // Cadastra o agendamento
+  async function salvarAgendamento(event) {
+    event.preventDefault();
+
+    setSalvando(true);
+    setMensagemErro("");
+    setMensagemSucesso("");
+
+    const novoAgendamento = {
+      data: data,
+      transportadora: {
+        id: Number(transportadoraId),
+      },
+      motorista: {
+        id: Number(motoristaId),
+      },
+      placa: placa.trim().toUpperCase(),
+      status: "PENDENTE",
+      coleta: tipoAgendamento === "expedicao",
+      descricao: descricao.trim()
+    };
+
+    try {
+      const resposta = await fetch(
+        "http://localhost:8080/agendamentos",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(novoAgendamento),
+        }
+      );
+
+      if (!resposta.ok) {
+        throw new Error(
+          "Não foi possível cadastrar o agendamento."
+        );
+      }
+
+      setMensagemSucesso(
+        "Agendamento cadastrado com sucesso!"
+      );
+
+      // Aguarda um instante para exibir a mensagem
+      setTimeout(() => {
+        navigate("/agendamentos");
+      }, 1000);
+    } catch (erro) {
+      setMensagemErro(erro.message);
+    } finally {
+      setSalvando(false);
+    }
+  }
+
+  // Volta para a página anterior
+  function cancelarCadastro() {
+    navigate("/agendamentos");
+  }
+
+  return (
+    <main className="novo-agendamento-container">
+      <Navbar/>
+      <section className="novo-agendamento-card">
+
+        <header className="novo-agendamento-cabecalho">
+          <div>
+            <h1 className="novo-agendamento-title">Novo agendamento</h1>
+          </div>
+        </header>
+
+        {/* Exibindo campos de cadastro de agendamento */}
+        {carregando ? (
+          <p className="novo-agendamento-carregando">
+            Carregando transportadoras e motoristas...
+          </p>
+        ) : (
+          
+          // INICIO FORMULARIO DE CADASTRO DE AGENDAMENTO
+          <form className="novo-agendamento-form" onSubmit={salvarAgendamento}>
+            
+        <div className="row1">
+            {/* CAMPO DATA */}
+            <div className="novo-agendamento-campo">
+              <label htmlFor="data-agendamento">Data do agendamento</label>
+
+              <input
+                type="date" id="data-agendamento" value={data}
+                onChange={(event) => setData(event.target.value)}
+                required disabled={salvando}/>
+            </div>
+
+
+            {/* CAMPO TRANSPORTADORA */}
+            <div className="novo-agendamento-campo">
+              <label htmlFor="transportadora-agendamento">Transportadora</label>
+
+              <select
+                id="transportadora-agendamento" value={transportadoraId}
+                onChange={(event) =>
+                setTransportadoraId(event.target.value)}
+                required disabled={salvando}>
+                <option value="">Selecione uma transportadora</option>
+
+                {transportadoras.map((transportadora) => (
+                  <option key={transportadora.id} value={transportadora.id}>
+                    {transportadora.nome}
+                  </option>))}
+              </select>
+            </div>
+
+
+            {/* CAMPO MOTORISTA */}
+            <div className="novo-agendamento-campo">
+              <label htmlFor="motorista-agendamento">Motorista</label>
+
+              <select
+                id="motorista-agendamento" value={motoristaId}
+                onChange={(event) =>
+                setMotoristaId(event.target.value)}
+                required disabled={salvando}>
+
+                <option value="">Selecione um motorista</option>
+
+                {motoristas.map((motorista) => (
+                  <option key={motorista.id} value={motorista.id}>
+                    {motorista.nome}
+                  </option>))}
+              </select>
+            </div>
+
+
+            {/* CAMPO PLACA */}
+            <div className="novo-agendamento-campo">
+              <label htmlFor="placa-agendamento">Placa do veículo</label>
+
+              <input
+                type="text" id="placa-agendamento"
+                placeholder="Ex.: ABC1D23" value={placa}
+                onChange={(event) =>
+                setPlaca(event.target.value.toUpperCase())}
+                maxLength={10} required disabled={salvando}/>
+            </div>
+          </div>
+
+          <div className="row2">
+            {/* CAMPO TIPO AGENDAMENTO */}
+            <div className="novo-agendamento-campo">
+              <label htmlFor="tipo-agendamento">Tipo do agendamento</label>
+
+              <select
+                id="tipo-agendamento"
+                value={tipoAgendamento}
+                onChange={(event) => setTipoAgendamento(event.target.value)}
+                required disabled={salvando}>
+
+                <option value="">Selecione o tipo do agendamento</option>
+                <option value="recebimento">Recebimento</option>
+                <option value="expedicao">Expedição</option>
+              </select>
+            </div>
+
+            {/* CAMPO STATUS */}
+            <div className="novo-agendamento-status">
+              <label htmlFor="">Status Inicial: </label><p>Pendente</p>
+            </div>
+
+                  
+            {/* CAMPO DESCRIÇÃO  */}
+            <div className="novo-agendamento-campo">
+              <label htmlFor="descricao-agendamento">Descrição</label>
+
+              <textarea
+                id="descricao-agendamento"
+                value={descricao}
+                onChange={(event) => setDescricao(event.target.value)}
+                placeholder="Descreva os detalhes do agendamento..."
+                rows={7} maxLength={2000} disabled={salvando}/>
+            </div>
+          </div>
+
+            {/* CAMPO MENSAGENS DE RETORNO */}
+            {mensagemErro &&(
+              <p className="novo-agendamento-erro" role="alert">
+                {mensagemErro}
+              </p>
+            )}
+
+            {mensagemSucesso &&(
+              <p className="novo-agendamento-sucesso" role="status">
+                {mensagemSucesso}
+              </p>
+            )}
+
+            {/* CAMPO BOTÕES */}
+            <div className="novoAgendamento-btns-container">
+              <button type="button" className="novoAgendamento-btns"  
+                onClick={cancelarCadastro}
+                disabled={salvando}>
+                Cancelar
+              </button>
+
+              <button type="submit" className="novoAgendamento-btns"         
+                disabled={salvando}>
+                {salvando ? "Salvando..." : "Salvar agendamento"}
+              </button>
+            </div>
+
+          </form>
+        )}
+      </section>
+    </main>
+  );
+}
+
+export default CadastrarAgendamento;
