@@ -35,6 +35,12 @@ public class AgendamentoService {
             agendamento.setStatus(Status.PENDENTE);
         }
 
+        // UC05 - Simular Frete: o frete só é vinculado pelo FreteService,
+        // que recalcula o valor. Um frete enviado no cadastro é ignorado.
+        if(agendamento.getId() == 0){
+            agendamento.setFrete(null);
+        }
+
         return agendamentoRepository.save(agendamento);
     }
 

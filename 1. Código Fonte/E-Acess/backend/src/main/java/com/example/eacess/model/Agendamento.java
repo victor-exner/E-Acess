@@ -12,6 +12,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 
 @Entity 
@@ -44,6 +46,12 @@ public class Agendamento{
 
     @Column(nullable = false)
     private boolean coleta;
+
+    // UC05 - Simular Frete [RN05]: no máximo um frete por agendamento.
+    // orphanRemoval apaga o frete antigo quando ele é substituído.
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "frete_id", unique = true)
+    private Frete frete;
 
     // Getters e Setters
     public int getId(){
@@ -108,5 +116,13 @@ public class Agendamento{
 
     public void setColeta(boolean coleta) {
         this.coleta = coleta;
+    }
+
+    public Frete getFrete() {
+        return frete;
+    }
+
+    public void setFrete(Frete frete) {
+        this.frete = frete;
     }
 }

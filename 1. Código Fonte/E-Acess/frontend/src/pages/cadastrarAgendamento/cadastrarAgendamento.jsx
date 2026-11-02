@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/navbar/navbar";
+import SimularFrete, { ResumoFrete } from "../../components/simularFrete/simularFrete";
 import "./cadastrarAgendamentos.css";
 
 function CadastrarAgendamento() {
@@ -12,6 +13,10 @@ function CadastrarAgendamento() {
   const [motoristaId, setMotoristaId] = useState("");
   const [placa, setPlaca] = useState("");
   const [descricao, setDescricao] = useState("");
+
+  // UC05 - frete simulado (vinculado logo depois que o agendamento é salvo)
+  const [frete, setFrete] = useState(null);
+  const [simulandoFrete, setSimulandoFrete] = useState(false);
 
   const [transportadoras, setTransportadoras] = useState([]);
   const [motoristas, setMotoristas] = useState([]);
@@ -82,7 +87,7 @@ function CadastrarAgendamento() {
       placa: placa.trim().toUpperCase(),
       status: "PENDENTE",
       coleta: tipoAgendamento === "expedicao",
-      descricao: descricao.trim()
+      descricao: descricao.trim(),
     };
 
     try {
@@ -103,6 +108,33 @@ function CadastrarAgendamento() {
         );
       }
 
+      // UC05 - passo 6: vincula o frete simulado ao agendamento recém-criado.
+      // O backend recalcula o valor a partir de peso, distância e dimensão.
+      if (frete) {
+        const agendamentoSalvo = await resposta.json();
+        const respostaFrete = await fetch(
+          `http://localhost:8080/agendamentos/${agendamentoSalvo.id}/frete`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              peso: frete.peso,
+              distancia: frete.distancia,
+              dimensao: frete.dimensao,
+            }),
+          }
+        );
+
+        if (!respostaFrete.ok) {
+          const corpo = await respostaFrete.json().catch(() => ({}));
+          throw new Error(
+            "Agendamento cadastrado, mas o frete não foi vinculado: " +
+            (corpo.mensagem ?? "erro inesperado") +
+            ". Vincule o frete pela tela de edição."
+          );
+        }
+      }
+
       setMensagemSucesso(
         "Agendamento cadastrado com sucesso!"
       );
@@ -116,6 +148,15 @@ function CadastrarAgendamento() {
     } finally {
       setSalvando(false);
     }
+  }
+
+  // UC05 - passo 6: no cadastro o frete fica no formulário e é
+  // gravado quando o agendamento for salvo
+  function vincularFrete(dadosFrete) {
+    setFrete(dadosFrete);
+    setSimulandoFrete(false);
+    setMensagemErro("");
+    setMensagemSucesso("Frete vinculado ao agendamento!");
   }
 
   // Volta para a página anterior
@@ -242,6 +283,24 @@ function CadastrarAgendamento() {
                 placeholder="Descreva os detalhes do agendamento..."
                 rows={7} maxLength={2000} disabled={salvando}/>
             </div>
+
+            {/* CAMPO FRETE (UC05 - Simular Frete) */}
+            <div className="agendamento-frete">
+              <label>Frete</label>
+              {frete ? (
+                <>
+                  <ResumoFrete frete={frete}/>
+                  <small>Será gravado ao salvar o agendamento.</small>
+                </>
+              ) : (
+                <small>Nenhum frete vinculado.</small>
+              )}
+              <button type="button" className="novoAgendamento-btns"
+                onClick={() => { setMensagemSucesso(""); setSimulandoFrete(true); }}
+                disabled={salvando}>
+                Simular frete
+              </button>
+            </div>
           </div>
 
             {/* CAMPO MENSAGENS DE RETORNO */}
@@ -274,6 +333,13 @@ function CadastrarAgendamento() {
           </form>
         )}
       </section>
+
+      {simulandoFrete && (
+        <SimularFrete
+          freteAtual={frete}
+          aoConfirmar={vincularFrete}
+          aoFechar={() => setSimulandoFrete(false)}/>
+      )}
     </main>
   );
 }
