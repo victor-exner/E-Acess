@@ -1,7 +1,6 @@
 package com.example.eacess.service;
 
 import com.example.eacess.model.Agendamento;
-import com.example.eacess.model.Frete;
 import com.example.eacess.model.Status;
 import com.example.eacess.repository.AgendamentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +15,6 @@ public class AgendamentoService {
     
     @Autowired 
     private AgendamentoRepository agendamentoRepository;
-
-    @Autowired
-    private FreteService freteService;
 
     // Listar todos agendamentos
     public List<Agendamento> listarTodos(){
@@ -39,11 +35,10 @@ public class AgendamentoService {
             agendamento.setStatus(Status.PENDENTE);
         }
 
-        // UC05 - frete simulado durante o cadastro (ainda sem id):
-        // recalcula o valor no servidor em vez de confiar no valor enviado
-        Frete frete = agendamento.getFrete();
-        if (frete != null && frete.getId() == 0) {
-            agendamento.setFrete(freteService.gerarFrete(freteService.requisicaoDe(frete)));
+        // UC05 - Simular Frete: o frete só é vinculado pelo FreteService,
+        // que recalcula o valor. Um frete enviado no cadastro é ignorado.
+        if(agendamento.getId() == 0){
+            agendamento.setFrete(null);
         }
 
         return agendamentoRepository.save(agendamento);

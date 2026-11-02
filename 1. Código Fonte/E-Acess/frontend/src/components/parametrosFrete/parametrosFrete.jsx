@@ -30,14 +30,14 @@ const CAMPOS = [
     campo: "fatorCubagem",
     rotulo: "Fator de cubagem (kg/m³)",
     placeholder: "Ex.: 300",
-    ajuda: "Quantos kg vale cada m³ ocupado.",
+    ajuda: "Quantos kg vale cada m³ ocupado. ",
     minimoZero: false,
   },
   {
     campo: "valorMinimo",
     rotulo: "Valor mínimo do frete (R$)",
     placeholder: "Ex.: 150,00",
-    ajuda: "Nenhum frete sai por menos que este valor.",
+    ajuda: "Valor mínimo cobrado em frete.",
     minimoZero: true,
   },
 ];

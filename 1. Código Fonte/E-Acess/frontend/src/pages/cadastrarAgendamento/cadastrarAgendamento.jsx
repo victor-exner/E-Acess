@@ -14,7 +14,7 @@ function CadastrarAgendamento() {
   const [placa, setPlaca] = useState("");
   const [descricao, setDescricao] = useState("");
 
-  // UC05 - frete simulado (gravado junto com o agendamento)
+  // UC05 - frete simulado (vinculado logo depois que o agendamento é salvo)
   const [frete, setFrete] = useState(null);
   const [simulandoFrete, setSimulandoFrete] = useState(false);
 
@@ -88,10 +88,6 @@ function CadastrarAgendamento() {
       status: "PENDENTE",
       coleta: tipoAgendamento === "expedicao",
       descricao: descricao.trim(),
-      // UC05 - o backend recalcula o valor a partir destes dados
-      frete: frete
-        ? { peso: frete.peso, distancia: frete.distancia, dimensao: frete.dimensao }
-        : null,
     };
 
     try {
@@ -110,6 +106,33 @@ function CadastrarAgendamento() {
         throw new Error(
           "Não foi possível cadastrar o agendamento."
         );
+      }
+
+      // UC05 - passo 6: vincula o frete simulado ao agendamento recém-criado.
+      // O backend recalcula o valor a partir de peso, distância e dimensão.
+      if (frete) {
+        const agendamentoSalvo = await resposta.json();
+        const respostaFrete = await fetch(
+          `http://localhost:8080/agendamentos/${agendamentoSalvo.id}/frete`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              peso: frete.peso,
+              distancia: frete.distancia,
+              dimensao: frete.dimensao,
+            }),
+          }
+        );
+
+        if (!respostaFrete.ok) {
+          const corpo = await respostaFrete.json().catch(() => ({}));
+          throw new Error(
+            "Agendamento cadastrado, mas o frete não foi vinculado: " +
+            (corpo.mensagem ?? "erro inesperado") +
+            ". Vincule o frete pela tela de edição."
+          );
+        }
       }
 
       setMensagemSucesso(

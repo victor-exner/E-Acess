@@ -107,9 +107,7 @@ function EditarAgendamento() {
         body: JSON.stringify({
           peso: dadosFrete.peso,
           distancia: dadosFrete.distancia,
-          comprimento: dadosFrete.comprimento,
-          largura: dadosFrete.largura,
-          altura: dadosFrete.altura,
+          dimensao: dadosFrete.dimensao,
         }),
       }
     );

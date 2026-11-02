@@ -9,8 +9,7 @@ import { paraNumero } from "./numeros";
 // Props:
 //  - freteAtual: frete já vinculado ao agendamento (ou null)          [FA04]
 //  - aoConfirmar(dados): chamada ao confirmar o vínculo; recebe
-//      { peso, distancia, comprimento, largura, altura, dimensao, valor }.
-//      Pode ser assíncrona e
+//      { peso, distancia, dimensao, valor }. Pode ser assíncrona e
 //      lançar erro (a mensagem é exibida no modal).                    [passo 6]
 //  - aoFechar(): fecha o modal sem gravar nada                         [FA02 / RN07]
 
@@ -25,13 +24,13 @@ const formatarNumero = (valor, casas = 2) =>
     maximumFractionDigits: casas,
   });
 
-
 function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
   // FA04 - se já existe frete, primeiro avisa que ele será substituído
   const [avisoSubstituicao, setAvisoSubstituicao] = useState(Boolean(freteAtual));
 
   const [peso, setPeso] = useState("");
   const [distancia, setDistancia] = useState("");
+  // Dimensão em três campos; vai para o backend como um texto só "C x L x A"
   const [comprimento, setComprimento] = useState("");
   const [largura, setLargura] = useState("");
   const [altura, setAltura] = useState("");
@@ -51,7 +50,7 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
     return (event) => {
       setter(event.target.value);
       setResultado(null);
-      setErros((atual) => ({ ...atual, [campo]: undefined }));
+      setErros((atual) => ({ ...atual, [campo]: undefined, dimensao: undefined }));
       setMensagemErro("");
       setMensagemInfo("");
     };
@@ -97,21 +96,19 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
         body: JSON.stringify({
           peso: paraNumero(peso),
           distancia: paraNumero(distancia),
-          comprimento: paraNumero(comprimento),
-          largura: paraNumero(largura),
-          altura: paraNumero(altura),
+          dimensao: `${comprimento.trim()} x ${largura.trim()} x ${altura.trim()}`,
         }),
       });
 
       const corpo = await resposta.json().catch(() => ({}));
 
       if (resposta.status === 400) {
-        setErros(corpo.erros ?? {}); // FA01
-        setMensagemErro(corpo.erros ? "" : corpo.mensagem);
+        // FA01 - erros por campo; FA05 (sem tarifa) vem em "geral"
+        setErros(corpo.erros ?? {});
+        setMensagemErro(corpo.erros?.geral ?? (corpo.erros ? "" : corpo.mensagem));
         return;
       }
       if (!resposta.ok) {
-        // FA05 (422) ou erro inesperado
         throw new Error(corpo.mensagem ?? "Não foi possível calcular o frete.");
       }
 
@@ -135,9 +132,6 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
       await aoConfirmar({
         peso: resultado.peso,
         distancia: resultado.distancia,
-        comprimento: paraNumero(comprimento),
-        largura: paraNumero(largura),
-        altura: paraNumero(altura),
         dimensao: resultado.dimensao,
         valor: resultado.valor,
       });
@@ -154,6 +148,7 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
     setVendoParametros(false);
     if (salvou) {
       setResultado(null);
+      setMensagemErro("");
       setMensagemInfo("Parâmetros atualizados. Calcule o frete novamente.");
     }
   }
@@ -221,6 +216,9 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
                     valor={altura} aoAlterar={alterar(setAltura, "altura")}
                     erro={erros.altura} desabilitado={ocupado} inputMode="decimal" />
                 </div>
+                {erros.dimensao && (
+                  <span className="simular-frete-erro-campo">{erros.dimensao}</span>
+                )}
               </fieldset>
             </div>
 

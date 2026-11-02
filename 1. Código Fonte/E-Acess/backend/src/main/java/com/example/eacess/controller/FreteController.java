@@ -1,5 +1,8 @@
 package com.example.eacess.controller;
 
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,16 +13,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.eacess.dto.SimulacaoFreteRequest;
-import com.example.eacess.dto.SimulacaoFreteResponse;
 import com.example.eacess.model.Agendamento;
+import com.example.eacess.model.Frete;
 import com.example.eacess.model.TarifaFrete;
 import com.example.eacess.service.FreteService;
 
 /**
- * Endpoints do UC05 - Simular Frete.
- * Erros de validação (FA01) e tarifa não configurada (FA05)
- * são tratados em FreteExceptionHandler.
+ * UC05 - Simular Frete.
+ * Quando o service devolve "erros", a resposta é 400 Bad Request.
  */
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -28,36 +29,56 @@ public class FreteController {
     @Autowired
     private FreteService freteService;
 
-    // 1. Simular frete sem gravar nada [RN07]
-    //    (POST: http://localhost:8080/fretes/simular)
+    // 1. Simular frete sem gravar nada (POST: http://localhost:8080/fretes/simular)
     @PostMapping("/fretes/simular")
-    public SimulacaoFreteResponse simular(@RequestBody SimulacaoFreteRequest dados) {
-        return freteService.simular(dados);
+    public ResponseEntity<Map<String, Object>> simular(@RequestBody Frete dados) {
+        return responder(freteService.simular(dados));
     }
 
-    // 2. Vincular (ou substituir [RN05]) o frete de um agendamento existente
+    // 2. Vincular (ou substituir) o frete de um agendamento
     //    (PUT: http://localhost:8080/agendamentos/1/frete)
     @PutMapping("/agendamentos/{id}/frete")
-    public ResponseEntity<Agendamento> vincular(@PathVariable int id,
-                                                @RequestBody SimulacaoFreteRequest dados) {
-        return freteService.vincularAoAgendamento(id, dados)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> vincular(@PathVariable int id, @RequestBody Frete dados) {
+        Optional<Agendamento> agendamento = freteService.buscarAgendamento(id);
+
+        if (agendamento.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Map<String, Object> resultado = freteService.vincularAoAgendamento(agendamento.get(), dados);
+        if (resultado.containsKey("erros")) {
+            return ResponseEntity.badRequest().body(resultado);
+        }
+        return ResponseEntity.ok(resultado.get("agendamento"));
     }
 
-    // 3. Consultar a tabela de tarifas vigente
-    //    (GET: http://localhost:8080/fretes/tarifa)
+    // 3. Consultar os parâmetros do frete (GET: http://localhost:8080/fretes/tarifa)
     @GetMapping("/fretes/tarifa")
-    public ResponseEntity<TarifaFrete> obterTarifa() {
-        return freteService.obterTarifaVigente()
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<TarifaFrete> buscarTarifa() {
+        Optional<TarifaFrete> tarifa = freteService.buscarTarifa();
+
+        if (tarifa.isPresent()) {
+            return ResponseEntity.ok(tarifa.get());
+        }
+        return ResponseEntity.notFound().build();
     }
 
-    // 4. Parametrizar a tabela de tarifas (área de Logística)
-    //    (PUT: http://localhost:8080/fretes/tarifa)
+    // 4. Alterar os parâmetros do frete (PUT: http://localhost:8080/fretes/tarifa)
     @PutMapping("/fretes/tarifa")
-    public TarifaFrete salvarTarifa(@RequestBody TarifaFrete tarifa) {
-        return freteService.salvarTarifa(tarifa);
+    public ResponseEntity<?> salvarTarifa(@RequestBody TarifaFrete tarifa) {
+        Map<String, Object> resultado = freteService.salvarTarifa(tarifa);
+
+        if (resultado.containsKey("erros")) {
+            return ResponseEntity.badRequest().body(resultado);
+        }
+        return ResponseEntity.ok(resultado.get("tarifa"));
+    }
+
+    // Erro de validação ou tarifa não configurada -> 400; sucesso -> 200
+    private ResponseEntity<Map<String, Object>> responder(Map<String, Object> resultado) {
+        if (resultado.containsKey("erros")) {
+            return ResponseEntity.badRequest().body(resultado);
+        }
+        return ResponseEntity.ok(resultado);
     }
 }
