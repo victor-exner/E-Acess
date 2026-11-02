@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/navbar/navbar";
+import SimularFrete, { ResumoFrete } from "../../components/simularFrete/simularFrete";
 import "./cadastrarAgendamentos.css";
 
 function CadastrarAgendamento() {
@@ -12,6 +13,10 @@ function CadastrarAgendamento() {
   const [motoristaId, setMotoristaId] = useState("");
   const [placa, setPlaca] = useState("");
   const [descricao, setDescricao] = useState("");
+
+  // UC05 - frete simulado (gravado junto com o agendamento)
+  const [frete, setFrete] = useState(null);
+  const [simulandoFrete, setSimulandoFrete] = useState(false);
 
   const [transportadoras, setTransportadoras] = useState([]);
   const [motoristas, setMotoristas] = useState([]);
@@ -82,7 +87,11 @@ function CadastrarAgendamento() {
       placa: placa.trim().toUpperCase(),
       status: "PENDENTE",
       coleta: tipoAgendamento === "expedicao",
-      descricao: descricao.trim()
+      descricao: descricao.trim(),
+      // UC05 - o backend recalcula o valor a partir destes dados
+      frete: frete
+        ? { peso: frete.peso, distancia: frete.distancia, dimensao: frete.dimensao }
+        : null,
     };
 
     try {
@@ -116,6 +125,15 @@ function CadastrarAgendamento() {
     } finally {
       setSalvando(false);
     }
+  }
+
+  // UC05 - passo 6: no cadastro o frete fica no formulário e é
+  // gravado quando o agendamento for salvo
+  function vincularFrete(dadosFrete) {
+    setFrete(dadosFrete);
+    setSimulandoFrete(false);
+    setMensagemErro("");
+    setMensagemSucesso("Frete vinculado ao agendamento!");
   }
 
   // Volta para a página anterior
@@ -242,6 +260,24 @@ function CadastrarAgendamento() {
                 placeholder="Descreva os detalhes do agendamento..."
                 rows={7} maxLength={2000} disabled={salvando}/>
             </div>
+
+            {/* CAMPO FRETE (UC05 - Simular Frete) */}
+            <div className="agendamento-frete">
+              <label>Frete</label>
+              {frete ? (
+                <>
+                  <ResumoFrete frete={frete}/>
+                  <small>Será gravado ao salvar o agendamento.</small>
+                </>
+              ) : (
+                <small>Nenhum frete vinculado.</small>
+              )}
+              <button type="button" className="novoAgendamento-btns"
+                onClick={() => { setMensagemSucesso(""); setSimulandoFrete(true); }}
+                disabled={salvando}>
+                Simular frete
+              </button>
+            </div>
           </div>
 
             {/* CAMPO MENSAGENS DE RETORNO */}
@@ -274,6 +310,13 @@ function CadastrarAgendamento() {
           </form>
         )}
       </section>
+
+      {simulandoFrete && (
+        <SimularFrete
+          freteAtual={frete}
+          aoConfirmar={vincularFrete}
+          aoFechar={() => setSimulandoFrete(false)}/>
+      )}
     </main>
   );
 }

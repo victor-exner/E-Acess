@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import SimularFrete, { ResumoFrete } from "../../components/simularFrete/simularFrete";
 
 function EditarAgendamento() {
   const { id } = useParams();
@@ -10,6 +11,7 @@ function EditarAgendamento() {
   const [salvando, setSalvando] = useState(false);
   const [mensagemErro, setMensagemErro] = useState("");
   const [mensagemSucesso, setMensagemSucesso] = useState("");
+  const [simulandoFrete, setSimulandoFrete] = useState(false);
 
   // Busca os dados atuais do agendamento
   useEffect(() => {
@@ -93,6 +95,36 @@ function EditarAgendamento() {
     } finally {
       setSalvando(false);
     }
+  }
+
+  // UC05 - passo 6: grava (ou substitui) o frete do agendamento
+  async function vincularFrete(dadosFrete) {
+    const resposta = await fetch(
+      `http://localhost:8080/agendamentos/${id}/frete`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          peso: dadosFrete.peso,
+          distancia: dadosFrete.distancia,
+          comprimento: dadosFrete.comprimento,
+          largura: dadosFrete.largura,
+          altura: dadosFrete.altura,
+        }),
+      }
+    );
+
+    if (!resposta.ok) {
+      const corpo = await resposta.json().catch(() => ({}));
+      throw new Error(corpo.mensagem ?? "Não foi possível vincular o frete.");
+    }
+
+    const dadosSalvos = await resposta.json();
+    // Atualiza só o frete para não perder alterações ainda não salvas no formulário
+    setAgendamento((atual) => ({ ...atual, frete: dadosSalvos.frete }));
+    setSimulandoFrete(false);
+    setMensagemErro("");
+    setMensagemSucesso("Frete vinculado ao agendamento!");
   }
 
   if (carregando) {
@@ -230,6 +262,26 @@ function EditarAgendamento() {
               placeholder="Informe a descrição do agendamento"
             />
           </div>
+
+          {/* UC05 - Simular Frete */}
+          <div className="editar-agendamento-campo agendamento-frete">
+            <label>Frete</label>
+            {agendamento.frete ? (
+              <ResumoFrete frete={agendamento.frete} />
+            ) : (
+              <small>Nenhum frete vinculado.</small>
+            )}
+            <button
+              type="button"
+              className="editar-agendamento-voltar"
+              onClick={() => {
+                setMensagemSucesso("");
+                setSimulandoFrete(true);
+              }}
+            >
+              Simular frete
+            </button>
+          </div>
         </div>
 
         {mensagemErro && (
@@ -262,6 +314,14 @@ function EditarAgendamento() {
           </button>
         </div>
       </form>
+
+      {simulandoFrete && (
+        <SimularFrete
+          freteAtual={agendamento.frete}
+          aoConfirmar={vincularFrete}
+          aoFechar={() => setSimulandoFrete(false)}
+        />
+      )}
     </main>
   );
 }
