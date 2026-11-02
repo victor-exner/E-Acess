@@ -18,10 +18,6 @@ import com.example.eacess.model.Frete;
 import com.example.eacess.model.TarifaFrete;
 import com.example.eacess.service.FreteService;
 
-/**
- * UC05 - Simular Frete.
- * Quando o service devolve "erros", a resposta é 400 Bad Request.
- */
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 public class FreteController {
