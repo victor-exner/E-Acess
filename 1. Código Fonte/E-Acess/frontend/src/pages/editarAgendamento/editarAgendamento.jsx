@@ -62,7 +62,7 @@ function EditarAgendamento() {
       const dadosAtualizados = {
         data: agendamento.data,
         placa: agendamento.placa,
-        descricao: agendamento.descricao,
+        observacao: agendamento.observacao,
         status: agendamento.status,
         coleta: agendamento.coleta,
       };
@@ -250,14 +250,14 @@ function EditarAgendamento() {
           </div>
 
           <div className="editar-agendamento-campo editar-agendamento-descricao">
-            <label htmlFor="descricao">Descrição</label>
+            <label htmlFor="observacao">Observação</label>
             <textarea
-              id="descricao"
-              name="descricao"
+              id="observacao"
+              name="observacao"
               rows={5}
-              value={agendamento.descricao ?? ""}
+              value={agendamento.observacao ?? ""}
               onChange={atualizarCampo}
-              placeholder="Informe a descrição do agendamento"
+              placeholder="Informe as observações do agendamento"
             />
           </div>
 

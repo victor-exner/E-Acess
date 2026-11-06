@@ -12,7 +12,7 @@ function CadastrarAgendamento() {
   const [transportadoraId, setTransportadoraId] = useState("");
   const [motoristaId, setMotoristaId] = useState("");
   const [placa, setPlaca] = useState("");
-  const [descricao, setDescricao] = useState("");
+  const [observacao, setObservacao] = useState("");
 
   // UC05 - frete simulado (vinculado logo depois que o agendamento é salvo)
   const [frete, setFrete] = useState(null);
@@ -87,7 +87,7 @@ function CadastrarAgendamento() {
       placa: placa.trim().toUpperCase(),
       status: "PENDENTE",
       coleta: tipoAgendamento === "expedicao",
-      descricao: descricao.trim(),
+      observacao: observacao.trim(),
     };
 
     try {
@@ -274,12 +274,12 @@ function CadastrarAgendamento() {
                   
             {/* CAMPO DESCRIÇÃO  */}
             <div className="novo-agendamento-campo">
-              <label htmlFor="descricao-agendamento">Descrição</label>
+              <label htmlFor="observacao-agendamento">Descrição</label>
 
               <textarea
-                id="descricao-agendamento"
-                value={descricao}
-                onChange={(event) => setDescricao(event.target.value)}
+                id="observacao-agendamento"
+                value={observacao}
+                onChange={(event) => setObservacao(event.target.value)}
                 placeholder="Descreva os detalhes do agendamento..."
                 rows={7} maxLength={2000} disabled={salvando}/>
             </div>

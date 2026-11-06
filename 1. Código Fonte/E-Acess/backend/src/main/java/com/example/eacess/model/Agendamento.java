@@ -2,6 +2,7 @@ package com.example.eacess.model;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 
 @Entity 
@@ -38,7 +38,7 @@ public class Agendamento{
     private String placa;
 
     @Column(columnDefinition = "TEXT")
-    private String descricao;
+    private String observacao;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -94,12 +94,12 @@ public class Agendamento{
         this.placa = placa;
     }
 
-    public String getDescricao(){
-        return descricao;
+    public String getObservacao(){
+        return observacao;
     }
 
-    public void setDescricao(String descricao){
-        this.descricao = descricao;
+    public void setObservacao(String observacao){
+        this.observacao = observacao;
     }
 
     public Status getStatus(){

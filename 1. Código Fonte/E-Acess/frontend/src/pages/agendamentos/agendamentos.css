@@ -51,6 +51,7 @@
     justify-content: space-between;
     width: 100%;
     padding: 1rem 0;
+    flex-wrap: wrap;
 }
 
 /* Containers filtros + Estilização filtros */
@@ -59,19 +60,25 @@
     flex-direction: column;
     justify-content: center;
     width: 100%;
+    max-width: 100%;
     padding-top: 1rem;
+    box-sizing: border-box;
+    flex-wrap: wrap;
 }
 
 .form-filtros{
     width: 100%;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 .filtro-card{
     display: flex;
     flex-direction: row;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .filtro-campo{
@@ -126,17 +133,29 @@
 
 /* Containers agendamento + Estilização agendamentos */
 .agendamentos-lista{
+    width: 100%;
+    max-height: 500px;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    overflow: hidden;
+    min-width: 0;
 }
 
 .agendamentos-tabela{
     display: flex;
     flex-direction: column;
     width: 100%;
+    min-width: 0;
     border-radius: 1.2rem;
     border: 2px solid rgb(0, 51, 109);
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.agendamentos-tabela thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 .agendamentos-tabela tbody{
@@ -182,4 +201,100 @@
     max-height: 25rem;
     overflow-y: auto;
     overflow-x: auto;
+    width: 100%;
+    min-width: 0;
 } 
+
+/*  */
+@media (max-width: 768px) {
+    .container-principal{
+        width: 90%;
+    }
+
+    .agendamentos-container{
+        max-width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+    }
+
+    .filtro-card{
+        max-width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .filtro-campo{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        margin-top: 1rem;
+    }
+
+    .filtro-btns-container{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        flex: 1;
+        margin-top: 1rem;
+    }
+
+    /* Container da tabela */
+.agendamentos-tabela-scroll {
+    width: 100%;
+    max-height: 25rem;
+    overflow: auto;
+    min-width: 0;
+}
+
+/* Tabela */
+.agendamentos-tabela {
+    width: 100%;
+    min-width: 850px;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 2px solid rgb(0, 51, 109);
+    border-radius: 1rem;
+}
+
+/* Cabeçalho */
+.labels-container {
+    background-color: rgb(0, 51, 109);
+    color: white;
+}
+
+.agendamentos-labels {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: rgb(0, 51, 109);
+    padding: 0.8rem;
+    text-align: left;
+    white-space: nowrap;
+}
+
+/* Corpo da tabela */
+.agendamentos-tabela tbody {
+    background-color: white;
+}
+
+.agendamento-linha {
+    cursor: pointer;
+}
+
+.agendamento-linha:hover {
+    background-color: rgb(225, 242, 250);
+}
+
+.agendamentos-items {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+}

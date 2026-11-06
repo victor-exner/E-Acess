@@ -22,6 +22,9 @@ public class Usuario{
     @Column(nullable = false)
     private String senha;
 
+    @Column(nullable = false)
+    private Boolean adm;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Setor setor;
@@ -57,6 +60,14 @@ public class Usuario{
 
     public void setSetor(Setor setor){
         this.setor = setor;
+    }
+
+    public Boolean getAdm() {
+        return adm;
+    }
+
+    public void setAdm(Boolean adm) {
+        this.adm = adm;
     }
     
 }

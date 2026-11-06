@@ -1,7 +1,8 @@
 package com.example.eacess.model;
 
 public enum Status {
-    PENDENTE,
-    ANDAMENTO, 
-    CONCLUIDO
+    PENDENTE, 
+    ANDAMENTO,  
+    CONCLUIDO,
+    CANCELADO
 }

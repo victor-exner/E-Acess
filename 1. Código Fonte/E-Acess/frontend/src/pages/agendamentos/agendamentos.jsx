@@ -264,6 +264,7 @@ function Agendamentos() {
             Nenhum agendamento encontrado com os filtros informados.
           </p>
         ) : (
+        <div className="agendamentos-tabela-scroll">
         <table className="agendamentos-tabela">
           <thead>
             <tr className="labels-container">
@@ -278,7 +279,6 @@ function Agendamentos() {
             </tr>
           </thead>
 
-          <div className="agendamentos-tabela-scroll">
             <tbody>
               {agendamentosFiltrados.map((agendamento) => (
                 <tr key={agendamento.id} className="agendamento-linha" onClick={() => 
@@ -295,8 +295,8 @@ function Agendamentos() {
                 </tr>
                 ))}
             </tbody>
-          </div>
         </table>
+        </div>
         )}
       </section>
     </div>
