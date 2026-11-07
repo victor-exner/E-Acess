@@ -1,6 +1,5 @@
 import { useState } from "react";
 import "./simularFrete.css";
-import ParametrosFrete from "../parametrosFrete/parametrosFrete";
 import { paraNumero } from "./numeros";
 
 // UC05 - Simular Frete
@@ -35,10 +34,6 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
   const [largura, setLargura] = useState("");
   const [altura, setAltura] = useState("");
 
-  // Alterna entre a simulação e a tela de parâmetros (tarifas)
-  const [vendoParametros, setVendoParametros] = useState(false);
-  const [mensagemInfo, setMensagemInfo] = useState("");
-
   const [resultado, setResultado] = useState(null);
   const [erros, setErros] = useState({});
   const [mensagemErro, setMensagemErro] = useState("");
@@ -52,7 +47,6 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
       setResultado(null);
       setErros((atual) => ({ ...atual, [campo]: undefined, dimensao: undefined }));
       setMensagemErro("");
-      setMensagemInfo("");
     };
   }
 
@@ -81,7 +75,6 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
   async function calcular(event) {
     event.preventDefault();
     setMensagemErro("");
-    setMensagemInfo("");
     setResultado(null);
 
     const errosLocais = validarLocalmente();
@@ -103,7 +96,7 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
       const corpo = await resposta.json().catch(() => ({}));
 
       if (resposta.status === 400) {
-        // FA01 - erros por campo; FA05 (sem tarifa) vem em "geral"
+        // FA01 - erros por campo
         setErros(corpo.erros ?? {});
         setMensagemErro(corpo.erros?.geral ?? (corpo.erros ? "" : corpo.mensagem));
         return;
@@ -143,35 +136,13 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
 
   const ocupado = calculando || confirmando;
 
-  // Volta da tela de parâmetros; se foram salvos, o valor precisa ser recalculado
-  function voltarDosParametros(salvou) {
-    setVendoParametros(false);
-    if (salvou) {
-      setResultado(null);
-      setMensagemErro("");
-      setMensagemInfo("Parâmetros atualizados. Calcule o frete novamente.");
-    }
-  }
-
   return (
     <div className="simular-frete-fundo" role="dialog" aria-modal="true"
       aria-labelledby="simular-frete-titulo">
       <section className="simular-frete-card">
-        <div className="simular-frete-cabecalho">
-          <h2 id="simular-frete-titulo" className="simular-frete-titulo">
-            {vendoParametros ? "Parâmetros do frete" : "Simular frete"}
-          </h2>
-          {!vendoParametros && (
-            <button type="button" className="simular-frete-btn simular-frete-btn-pequeno"
-              onClick={() => setVendoParametros(true)} disabled={ocupado}>
-              Parâmetros
-            </button>
-          )}
-        </div>
+        <h2 id="simular-frete-titulo" className="simular-frete-titulo">Simular frete</h2>
 
-        {vendoParametros ? (
-          <ParametrosFrete aoVoltar={voltarDosParametros} />
-        ) : avisoSubstituicao ? (
+        {avisoSubstituicao ? (
           // ===== FA04 - Agendamento já possui frete =====
           <div className="simular-frete-aviso">
             <p><strong>Este agendamento já possui um frete vinculado:</strong></p>
@@ -234,10 +205,6 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
                 </ul>
                 <small>* Valor estimado, não constitui cobrança.</small>
               </div>
-            )}
-
-            {mensagemInfo && (
-              <p className="simular-frete-info" role="status">{mensagemInfo}</p>
             )}
 
             {mensagemErro && (

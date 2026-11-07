@@ -12,10 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.eacess.model.Agendamento;
 import com.example.eacess.model.Frete;
-import com.example.eacess.model.TarifaFrete;
 import com.example.eacess.repository.AgendamentoRepository;
 import com.example.eacess.repository.FreteRepository;
-import com.example.eacess.repository.TarifaFreteRepository;
 
 /**
  * UC05 - Simular Frete.
@@ -36,17 +34,18 @@ import com.example.eacess.repository.TarifaFreteRepository;
 @Service
 public class FreteService {
 
-    public static final String MENSAGEM_SEM_TARIFA =
-        "Não foi possível calcular o frete: tabela de tarifas não configurada";
+    // ===== Parâmetros do cálculo do frete [RN04] =====
+    // Valores fixos: para mudar, altere aqui e reinicie o sistema.
+    private static final BigDecimal TARIFA_POR_KG = new BigDecimal("0.15");   // R$ por kg
+    private static final BigDecimal TARIFA_POR_KM = new BigDecimal("2.50");   // R$ por km
+    private static final BigDecimal FATOR_CUBAGEM = new BigDecimal("200");    // kg por m³
+    private static final BigDecimal VALOR_MINIMO  = new BigDecimal("150.00"); // R$
 
     // A dimensão chega como um texto só: "comprimento x largura x altura"
     private static final String SEPARADOR_DIMENSAO = "\\s*[xX×*]\\s*";
 
     @Autowired
     private FreteRepository freteRepository;
-
-    @Autowired
-    private TarifaFreteRepository tarifaFreteRepository;
 
     @Autowired
     private AgendamentoRepository agendamentoRepository;
@@ -59,12 +58,7 @@ public class FreteService {
             return respostaDeErro(erros);
         }
 
-        Optional<TarifaFrete> tarifa = buscarTarifa();
-        if (tarifa.isEmpty()) {
-            return respostaDeErro(Map.of("geral", MENSAGEM_SEM_TARIFA)); // FA05
-        }
-
-        return calcular(dados, medidas, tarifa.get());
+        return calcular(dados, medidas);
     }
 
     // ===== 2. Vincular ao agendamento (passos 5 e 6) [RN05] =====
@@ -93,36 +87,6 @@ public class FreteService {
         Map<String, Object> resposta = new LinkedHashMap<>();
         resposta.put("mensagem", "Frete vinculado ao agendamento!");
         resposta.put("agendamento", agendamentoRepository.save(agendamento));
-        return resposta;
-    }
-
-    // ===== 3. Parâmetros do frete (tabela de tarifas) [RN04 / PC03] =====
-    public Optional<TarifaFrete> buscarTarifa() {
-        return tarifaFreteRepository.findFirstByOrderByIdDesc();
-    }
-
-    public Map<String, Object> salvarTarifa(TarifaFrete tarifa) {
-        Map<String, String> erros = new LinkedHashMap<>();
-        if (tarifa == null) {
-            tarifa = new TarifaFrete();
-        }
-        exigirPositivo(erros, "tarifaPorKg", tarifa.getTarifaPorKg(), "A tarifa por quilo");
-        exigirPositivo(erros, "tarifaPorKm", tarifa.getTarifaPorKm(), "A tarifa por quilômetro");
-        exigirPositivo(erros, "fatorCubagem", tarifa.getFatorCubagem(), "O fator de cubagem");
-        if (tarifa.getValorMinimo() == null || tarifa.getValorMinimo().signum() < 0) {
-            erros.put("valorMinimo", "O valor mínimo deve ser maior ou igual a zero");
-        }
-        if (!erros.isEmpty()) {
-            return respostaDeErro(erros);
-        }
-
-        // Mantém uma única tarifa: atualiza a vigente se já existir
-        TarifaFrete nova = tarifa;
-        buscarTarifa().ifPresent(atual -> nova.setId(atual.getId()));
-
-        Map<String, Object> resposta = new LinkedHashMap<>();
-        resposta.put("mensagem", "Parâmetros do frete salvos!");
-        resposta.put("tarifa", tarifaFreteRepository.save(nova));
         return resposta;
     }
 
@@ -192,23 +156,23 @@ public class FreteService {
     }
 
     // ===== Cálculo [RN04] e formatação [RN06] =====
-    Map<String, Object> calcular(Frete dados, BigDecimal[] medidas, TarifaFrete tarifa) {
+    Map<String, Object> calcular(Frete dados, BigDecimal[] medidas) {
         BigDecimal peso = BigDecimal.valueOf(dados.getPeso()).setScale(2, RoundingMode.HALF_UP);
         BigDecimal distancia = BigDecimal.valueOf(dados.getDistancia()).setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal volume = medidas[0].multiply(medidas[1]).multiply(medidas[2])
             .setScale(3, RoundingMode.HALF_UP);
-        BigDecimal pesoCubado = volume.multiply(tarifa.getFatorCubagem())
+        BigDecimal pesoCubado = volume.multiply(FATOR_CUBAGEM)
             .setScale(2, RoundingMode.HALF_UP);
         BigDecimal pesoTaxavel = peso.max(pesoCubado);
 
-        BigDecimal valor = pesoTaxavel.multiply(tarifa.getTarifaPorKg())
-            .add(distancia.multiply(tarifa.getTarifaPorKm()))
+        BigDecimal valor = pesoTaxavel.multiply(TARIFA_POR_KG)
+            .add(distancia.multiply(TARIFA_POR_KM))
             .setScale(2, RoundingMode.HALF_UP);
 
-        boolean minimoAplicado = valor.compareTo(tarifa.getValorMinimo()) < 0;
+        boolean minimoAplicado = valor.compareTo(VALOR_MINIMO) < 0;
         if (minimoAplicado) {
-            valor = tarifa.getValorMinimo().setScale(2, RoundingMode.HALF_UP);
+            valor = VALOR_MINIMO;
         }
 
         // Os valores intermediários mostram ao usuário como o valor foi calculado
@@ -245,7 +209,7 @@ public class FreteService {
         }
     }
 
-    private static void exigirPositivo(Map<String, String> erros, String campo,
+        private static void exigirPositivo(Map<String, String> erros, String campo,
                                        BigDecimal valor, String nome) {
         if (valor == null || valor.signum() <= 0) {
             erros.put(campo, nome + " deve ser maior que zero");
