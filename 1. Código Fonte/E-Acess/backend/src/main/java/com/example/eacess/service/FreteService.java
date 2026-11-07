@@ -209,12 +209,6 @@ public class FreteService {
         }
     }
 
-        private static void exigirPositivo(Map<String, String> erros, String campo,
-                                       BigDecimal valor, String nome) {
-        if (valor == null || valor.signum() <= 0) {
-            erros.put(campo, nome + " deve ser maior que zero");
-        }
-    }
 
     // Grava a dimensão sempre no mesmo formato. Ex.: 2,0 / 1.5 / 1,80 -> "2 x 1,5 x 1,8"
     private static String formatarDimensao(BigDecimal[] medidas) {
