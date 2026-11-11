@@ -20,4 +20,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Intege
 
     // Buscar agendamentos pelo ID do Motorista
     List<Agendamento> findByMotoristaId(int motorista);
+
+    // verifica se o motorista está vinculado a agendamento por ID.
+    boolean existsByMotoristaId(int motoristaId);
 }
