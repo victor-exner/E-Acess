@@ -1,300 +1,85 @@
-*{
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'poppins';
-}
-
-/* Main containers */
-.agendamentos-container{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.agendamentos-wrapper {
     width: 100%;
-    height: 100vh;
     background-color: rgb(170, 170, 170);
+    overflow-x: hidden;
 }
 
-.container-principal{
-    width: 70%;
+.container-principal {
     background-color: #fff;
     border-radius: 1rem;
-    padding: 1rem;
-    margin-top: 6rem;
     box-shadow: 0px 0px 6px #424242;
 }
 
-.agendamentos-title{
+.agendamentos-title {
     color: rgb(0, 70, 117);
 }
 
-.btn-novo-agendamento{
-    width: fit-content;
-    padding: 0.3rem 1.4rem;
-    cursor: pointer;
-    background-color: lightblue;
-    border-radius: 0.2rem;
-    border: 1px solid rgb(0, 126, 168);
-    font-weight: bold;
-    font-size: 1.2rem;
-    transition: all 0.3s ease;
-}
-
-.btn-novo-agendamento:hover{
-    background-color: rgb(0, 126, 168);
-    letter-spacing: 1px;
-}
-
-.agendamentos-cabecalho{
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 1rem 0;
-    flex-wrap: wrap;
-}
-
-/* Containers filtros + Estilização filtros */
-.filtros-container{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%;
-    max-width: 100%;
-    padding-top: 1rem;
-    box-sizing: border-box;
-    flex-wrap: wrap;
-}
-
-.form-filtros{
-    width: 100%;
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-}
-
-.filtro-card{
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    flex-wrap: wrap;
-}
-
-.filtro-campo{
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-.filtro-campo label{
-    font-weight: bold;
+.texto-azul-escuro {
     color: rgb(0, 45, 75);
+    font-size: 0.9rem;
 }
 
-.filtro-campo input, .filtro-campo select{
-    width: 10rem;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    border: 1px solid black;
-    background-color: rgb(255, 255, 255);
-    outline: none;
-}
-
-.filtro-campo input:focus, .filtro-campo select:focus{
-    border: 1px solid rgb(0, 70, 117);
-}
-
-.filtro-btns-container{
-    max-width: fit-content;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    flex: 1;
-}
-
-.filtro-btns{
-    width: 6.5rem;
-    height: fit-content;
-    padding: 0.3rem 1.4rem;
-    cursor: pointer;
+.btn-novo-agendamento {
     background-color: lightblue;
-    border-radius: 0.2rem;
     border: 1px solid rgb(0, 126, 168);
+    color: #000;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 1.05rem;
     transition: all 0.3s ease;
 }
 
-.filtro-btns:hover{
+.btn-novo-agendamento:hover {
     background-color: rgb(0, 126, 168);
-    letter-spacing: 1px;
+    color: #fff;
+    letter-spacing: 0.5px;
 }
 
-/* Containers agendamento + Estilização agendamentos */
-.agendamentos-lista{
-    width: 100%;
-    max-height: 500px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    min-width: 0;
+/* CSS Grid para distribuição responsiva automática dos filtros */
+.filtros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 0.85rem;
 }
 
-.agendamentos-tabela{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-width: 0;
-    border-radius: 1.2rem;
-    border: 2px solid rgb(0, 51, 109);
-    border-collapse: collapse;
-    table-layout: auto;
+.filtro-input {
+    border: 1px solid #6c757d;
+    border-radius: 0.45rem;
 }
 
-.agendamentos-tabela thead th {
-  position: sticky;
-  top: 0;
-  z-index: 2;
+.filtro-input:focus {
+    border-color: rgb(0, 70, 117);
+    box-shadow: none;
 }
 
-.agendamentos-tabela tbody{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 0.3rem;
-    min-height: 30rem;
-    padding: 4px;
+.filtro-btn {
+    background-color: lightblue;
+    border: 1px solid rgb(0, 126, 168);
+    color: #000;
+    font-weight: bold;
+    transition: all 0.3s ease;
 }
 
-.labels-container{
-    display: flex;
-    width: 100%;
-    padding: 0.3rem 0;
-    border-bottom: 2px solid rgb(0, 51, 109);
-    background-color: rgb(0, 51, 109);
-    border-radius: 1rem 1rem 0rem 0rem;
+.filtro-btn:hover {
+    background-color: rgb(0, 126, 168);
     color: #fff;
 }
 
-.agendamentos-labels{
-    flex: 1;
-    text-align: left;
-}
-
-.agendamento-linha{
-    display: flex;
-    gap: 1rem;
-    padding: 0.5rem 0;
-    border: 1px solid rgb(0, 126, 168);
-    border-radius: 0.5rem;
-    cursor: pointer;
-}
-
-.agendamentos-items{
-    box-sizing: border-box;
-    flex: 1;
-}
-
-/* Estilizando barra de rolagem para agendamentos */
-.agendamentos-tabela-scroll{
-    max-height: 25rem;
-    overflow-y: auto;
-    overflow-x: auto;
-    width: 100%;
-    min-width: 0;
-} 
-
-/*  */
-@media (max-width: 768px) {
-    .container-principal{
-        width: 90%;
-    }
-
-    .agendamentos-container{
-        max-width: 100%;
-        height: 100%;
-        overflow-x: hidden;
-    }
-
-    .filtro-card{
-        max-width: 100%;
-        flex-wrap: wrap;
-    }
-
-    .filtro-campo{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        flex: 1;
-        margin-top: 1rem;
-    }
-
-    .filtro-btns-container{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        max-width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        flex: 1;
-        margin-top: 1rem;
-    }
-
-    /* Container da tabela */
+/* Tabela com scroll vertical e cabeçalho fixo */
 .agendamentos-tabela-scroll {
-    width: 100%;
-    max-height: 25rem;
-    overflow: auto;
-    min-width: 0;
+    max-height: 26rem;
+    overflow-y: auto;
 }
 
-/* Tabela */
-.agendamentos-tabela {
-    width: 100%;
-    min-width: 850px;
-    table-layout: fixed;
-    border-collapse: separate;
-    border-spacing: 0;
-    border: 2px solid rgb(0, 51, 109);
-    border-radius: 1rem;
-}
-
-/* Cabeçalho */
-.labels-container {
-    background-color: rgb(0, 51, 109);
-    color: white;
-}
-
-.agendamentos-labels {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background-color: rgb(0, 51, 109);
-    padding: 0.8rem;
-    text-align: left;
+.tabela-cabecalho th {
+    background-color: rgb(0, 51, 109) !important;
+    color: #fff !important;
     white-space: nowrap;
-}
-
-/* Corpo da tabela */
-.agendamentos-tabela tbody {
-    background-color: white;
 }
 
 .agendamento-linha {
     cursor: pointer;
 }
 
-.agendamento-linha:hover {
+.agendamento-linha:hover td {
     background-color: rgb(225, 242, 250);
-}
-
-.agendamentos-items {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 }
