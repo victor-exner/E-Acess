@@ -4,24 +4,31 @@ import jakarta.persistence.*;
 
 @Entity 
 @Table(name = "motoristas")
-public class Motorista{
+public class Motorista {
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id; // <-- Mudar de int para Integer
 
-    @Column(nullable = false, unique = true, length = 64)
+    @Column(nullable = false, length = 64)
     private String nome;
 
-    @Column(nullable = false, unique = true)
-    private Long documento;
+    @Column(nullable = false, unique = true, length = 20)
+    private String documento;
 
+    public Motorista() {}
+
+    public Motorista(Integer id, String nome, String documento) {
+        this.id = id;
+        this.nome = nome;
+        this.documento = documento;
+    }
 
     // Getters e Setters
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -33,11 +40,11 @@ public class Motorista{
         this.nome = nome;
     }
 
-    public Long getDocumento() {
+    public String getDocumento() {
         return documento;
     }
 
-    public void setDocumento(Long documento) {
+    public void setDocumento(String documento) {
         this.documento = documento;
     }
 }
