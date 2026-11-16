@@ -1,0 +1,214 @@
+/* UC05 - Simular Frete (segue as cores do formulário de agendamento) */
+.simular-frete-fundo{
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.simular-frete-card{
+    width: 100%;
+    max-width: 440px;
+    background-color: #fff;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 0 10px #424242;
+}
+
+.simular-frete-titulo{
+    color: rgb(0, 70, 117);
+    margin-bottom: 1rem;
+}
+
+.simular-frete-campos{
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.simular-frete-campo{
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+}
+
+.simular-frete-campo input{
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid black;
+    outline: none;
+    font-weight: normal;
+}
+
+.simular-frete-campo input:focus{
+    border-color: rgb(0, 70, 117);
+}
+
+.simular-frete-campo .simular-frete-input-erro{
+    border-color: darkred;
+}
+
+.simular-frete-erro-campo, .simular-frete-erro{
+    color: darkred;
+    font-weight: normal;
+    font-size: 0.85rem;
+    margin-top: 0.2rem;
+}
+
+.simular-frete-erro{
+    margin-top: 0.8rem;
+}
+
+.simular-frete-resultado{
+    margin-top: 1rem;
+    padding: 0.8rem;
+    border-radius: 0.5rem;
+    background-color: rgb(230, 243, 250);
+    border: 1px solid rgb(0, 126, 168);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.simular-frete-valor{
+    font-size: 1.6rem;
+    color: rgb(0, 70, 117);
+}
+
+.simular-frete-resultado ul{
+    list-style: none;
+    font-size: 0.9rem;
+}
+
+.simular-frete-resultado small{
+    color: #555;
+}
+
+.simular-frete-aviso{
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.simular-frete-resumo{
+    list-style: none;
+    padding: 0.6rem 0.8rem;
+    border-radius: 0.5rem;
+    background-color: #f2f2f2;
+}
+
+.simular-frete-resumo span{
+    font-weight: bold;
+}
+
+.simular-frete-btns{
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.simular-frete-btn{
+    padding: 0.3rem 1.2rem;
+    cursor: pointer;
+    background-color: #fff;
+    border-radius: 0.2rem;
+    border: 1px solid rgb(0, 126, 168);
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.simular-frete-btn-principal{
+    background-color: lightblue;
+}
+
+.simular-frete-btn:hover:not(:disabled){
+    background-color: rgb(0, 126, 168);
+}
+
+.simular-frete-btn:disabled{
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* Bloco de frete exibido dentro dos formulários de agendamento */
+.agendamento-frete{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 80%;
+}
+
+.agendamento-frete > label{
+    font-weight: bold;
+}
+
+.agendamento-frete small{
+    color: #555;
+}
+
+/* Cabeçalho do modal: título + botão de parâmetros */
+.simular-frete-cabecalho{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.simular-frete-cabecalho .simular-frete-titulo{
+    margin-bottom: 0;
+}
+
+.simular-frete-btn-pequeno{
+    font-size: 0.85rem;
+    padding: 0.25rem 0.8rem;
+}
+
+/* Comprimento, largura e altura lado a lado */
+.simular-frete-grupo{
+    border: none;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+}
+
+.simular-frete-grupo legend{
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+}
+
+.simular-frete-medidas{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+}
+
+.simular-frete-medidas .simular-frete-campo label{
+    font-weight: normal;
+    font-size: 0.9rem;
+}
+
+.simular-frete-medidas .simular-frete-campo input{
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.simular-frete-ajuda{
+    color: #555;
+    font-weight: normal;
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+}
+
+.simular-frete-info{
+    margin-top: 0.8rem;
+    color: rgb(0, 70, 117);
+    font-size: 0.9rem;
+}

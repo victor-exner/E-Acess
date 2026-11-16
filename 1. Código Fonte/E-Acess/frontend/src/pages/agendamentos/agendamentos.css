@@ -1,0 +1,85 @@
+.agendamentos-wrapper {
+    width: 100%;
+    background-color: rgb(170, 170, 170);
+    overflow-x: hidden;
+}
+
+.container-principal {
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0px 0px 6px #424242;
+}
+
+.agendamentos-title {
+    color: rgb(0, 70, 117);
+}
+
+.texto-azul-escuro {
+    color: rgb(0, 45, 75);
+    font-size: 0.9rem;
+}
+
+.btn-novo-agendamento {
+    background-color: lightblue;
+    border: 1px solid rgb(0, 126, 168);
+    color: #000;
+    font-weight: bold;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+}
+
+.btn-novo-agendamento:hover {
+    background-color: rgb(0, 126, 168);
+    color: #fff;
+    letter-spacing: 0.5px;
+}
+
+/* CSS Grid para distribuição responsiva automática dos filtros */
+.filtros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 0.85rem;
+}
+
+.filtro-input {
+    border: 1px solid #6c757d;
+    border-radius: 0.45rem;
+}
+
+.filtro-input:focus {
+    border-color: rgb(0, 70, 117);
+    box-shadow: none;
+}
+
+.filtro-btn {
+    background-color: lightblue;
+    border: 1px solid rgb(0, 126, 168);
+    color: #000;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.filtro-btn:hover {
+    background-color: rgb(0, 126, 168);
+    color: #fff;
+}
+
+/* Tabela com scroll vertical e cabeçalho fixo */
+.agendamentos-tabela-scroll {
+    max-height: 26rem;
+    overflow-y: auto;
+}
+
+.tabela-cabecalho th {
+    background-color: rgb(0, 51, 109) !important;
+    color: #fff !important;
+    white-space: nowrap;
+}
+
+.agendamento-linha {
+    cursor: pointer;
+}
+
+.agendamento-linha:hover td {
+    background-color: rgb(225, 242, 250);
+}

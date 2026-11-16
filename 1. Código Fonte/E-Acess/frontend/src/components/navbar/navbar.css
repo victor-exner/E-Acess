@@ -1,0 +1,31 @@
+.navbar-custom {
+    background-color: rgb(35, 103, 148);
+    border-radius: 1rem;
+    box-shadow: 0px 0px 6px #969696;
+}
+
+.navbar-btn {
+    border-radius: 0.35rem;
+    border: 1px solid rgb(0, 40, 93);
+    font-weight: bold;
+    letter-spacing: 1px;
+    background-color: lightblue;
+    color: #000;
+    transition: all 0.3s ease;
+}
+
+.navbar-btn:hover {
+    background-color: rgb(0, 40, 93);
+    border-color: rgb(0, 40, 93);
+    color: #fff;
+}
+
+.logo-img {
+    width: 3.5rem;
+    height: auto;
+}
+
+.span-navbar {
+    color: #fff;
+    font-size: 1.4rem;
+}
