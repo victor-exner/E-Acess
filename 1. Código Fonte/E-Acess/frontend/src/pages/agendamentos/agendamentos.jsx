@@ -100,6 +100,14 @@ function Agendamentos() {
     setAgendamentosFiltrados(agendamentos);
   }
 
+  function formatarData(data) {
+  if (!data) return "—";
+
+  const [ano, mes, dia] = data.split("-");
+
+  return `${dia}/${mes}/${ano}`;
+  }
+
   function renderBadgeStatus(status) {
     const texto = String(status ?? "—").replaceAll("_", " ");
     if (status === "CONCLUIDO") return <span className="badge bg-success">{texto}</span>;
@@ -301,6 +309,7 @@ function Agendamentos() {
                       >
                         <td className="ps-3 fw-bold">{agendamento.id}</td>
                         <td>{agendamento.data || "—"}</td>
+                        <td>{formatarData(agendamento.data)}</td>
                         <td>{agendamento.transportadora?.nome || "—"}</td>
                         <td>{agendamento.motorista?.nome || "—"}</td>
                         <td>{agendamento.placa || "—"}</td>
