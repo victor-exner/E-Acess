@@ -308,6 +308,7 @@ function Agendamentos() {
                         onClick={() => navigate(`/editar-agendamento/${agendamento.id}`)}
                       >
                         <td className="ps-3 fw-bold">{agendamento.id}</td>
+                        <td>{agendamento.data || "—"}</td>
                         <td>{formatarData(agendamento.data)}</td>
                         <td>{agendamento.transportadora?.nome || "—"}</td>
                         <td>{agendamento.motorista?.nome || "—"}</td>

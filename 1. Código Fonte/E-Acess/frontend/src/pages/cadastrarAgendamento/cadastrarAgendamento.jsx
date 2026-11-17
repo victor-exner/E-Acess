@@ -4,6 +4,7 @@ import Navbar from "../../components/navbar/navbar";
 import SimularFrete, { ResumoFrete } from "../../components/simularFrete/simularFrete";
 import "./cadastrarAgendamentos.css";
 import ManterMotoristaModal from "../../components/modal/manterMotorista/manterMotorista";
+import ManterTransportadoraModal from "../../components/modal/manterTransportadora/manterTransportadora";
 
 function CadastrarAgendamento() {
   const navigate = useNavigate();
@@ -21,6 +22,9 @@ function CadastrarAgendamento() {
 
   // UC03 - controle do modal de motoristas
   const [gerenciandoMotorista, setGerenciandoMotorista] = useState(false);
+
+  // Manter Transportadora - controle do modal de transportadoras
+  const [gerenciandoTransportadora, setGerenciandoTransportadora] = useState(false);
 
   const [transportadoras, setTransportadoras] = useState([]);
   const [motoristas, setMotoristas] = useState([]);
@@ -155,6 +159,17 @@ function CadastrarAgendamento() {
     setMotoristaId(String(novoMotorista.id));
   }
 
+  // Manter Transportadora - RN04: atualiza a lista e seleciona a transportadora recém-criada/escolhida no formulário
+  function vincularTransportadora(novaTransportadora) {
+    setTransportadoras((atuais) => {
+      const existe = atuais.some((t) => t.id === novaTransportadora.id);
+      return existe
+        ? atuais.map((t) => (t.id === novaTransportadora.id ? novaTransportadora : t))
+        : [...atuais, novaTransportadora];
+    });
+    setTransportadoraId(String(novaTransportadora.id));
+  }
+
   // Volta para a página anterior
   function cancelarCadastro() {
     navigate("/agendamentos");
@@ -221,6 +236,15 @@ function CadastrarAgendamento() {
                             </option>
                           ))}
                         </select>
+
+                        <button
+                          type="button"
+                          className="btn btn-sm novoAgendamento-btns mt-2"
+                          onClick={() => setGerenciandoTransportadora(true)}
+                          disabled={salvando}
+                        >
+                          Gerenciar transportadoras
+                        </button>
                       </div>
 
                       <div>
@@ -390,6 +414,13 @@ function CadastrarAgendamento() {
         <ManterMotoristaModal
           aoFechar={() => setGerenciandoMotorista(false)}
           aoSelecionarMotorista={vincularMotorista}
+        />
+      )}
+
+      {gerenciandoTransportadora && (
+        <ManterTransportadoraModal
+          aoFechar={() => setGerenciandoTransportadora(false)}
+          aoSelecionarTransportadora={vincularTransportadora}
         />
       )}
     </div>
