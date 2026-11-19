@@ -25,7 +25,9 @@ const formatarNumero = (valor, casas = 2) =>
 
 function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
   // FA04 - se já existe frete, primeiro avisa que ele será substituído
-  const [avisoSubstituicao, setAvisoSubstituicao] = useState(Boolean(freteAtual));
+  const [avisoSubstituicao, setAvisoSubstituicao] = useState(
+    Boolean(freteAtual),
+  );
 
   const [peso, setPeso] = useState("");
   const [distancia, setDistancia] = useState("");
@@ -45,7 +47,11 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
     return (event) => {
       setter(event.target.value);
       setResultado(null);
-      setErros((atual) => ({ ...atual, [campo]: undefined, dimensao: undefined }));
+      setErros((atual) => ({
+        ...atual,
+        [campo]: undefined,
+        dimensao: undefined,
+      }));
       setMensagemErro("");
     };
   }
@@ -98,7 +104,9 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
       if (resposta.status === 400) {
         // FA01 - erros por campo
         setErros(corpo.erros ?? {});
-        setMensagemErro(corpo.erros?.geral ?? (corpo.erros ? "" : corpo.mensagem));
+        setMensagemErro(
+          corpo.erros?.geral ?? (corpo.erros ? "" : corpo.mensagem),
+        );
         return;
       }
       if (!resposta.ok) {
@@ -110,7 +118,7 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
       setMensagemErro(
         erro instanceof TypeError
           ? "Não foi possível conectar ao servidor."
-          : erro.message
+          : erro.message,
       );
     } finally {
       setCalculando(false);
@@ -137,24 +145,37 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
   const ocupado = calculando || confirmando;
 
   return (
-    <div className="simular-frete-fundo" role="dialog" aria-modal="true"
+    <div
+      className="simular-frete-fundo"
+      role="dialog"
+      aria-modal="true"
       aria-labelledby="simular-frete-titulo">
       <section className="simular-frete-card">
-        <h2 id="simular-frete-titulo" className="simular-frete-titulo">Simular frete</h2>
+        <h2 id="simular-frete-titulo" className="simular-frete-titulo">
+          Simular frete
+        </h2>
 
         {avisoSubstituicao ? (
           // ===== FA04 - Agendamento já possui frete =====
           <div className="simular-frete-aviso">
-            <p><strong>Este agendamento já possui um frete vinculado:</strong></p>
+            <p>
+              <strong>Este agendamento já possui um frete vinculado:</strong>
+            </p>
             <ResumoFrete frete={freteAtual} />
             <p>
-              Uma nova simulação confirmada <strong>substituirá</strong> o frete existente.
+              Uma nova simulação confirmada <strong>substituirá</strong> o frete
+              existente.
             </p>
             <div className="simular-frete-btns">
-              <button type="button" className="simular-frete-btn" onClick={aoFechar}>
+              <button
+                type="button"
+                className="simular-frete-btn"
+                onClick={aoFechar}>
                 Cancelar
               </button>
-              <button type="button" className="simular-frete-btn simular-frete-btn-principal"
+              <button
+                type="button"
+                className="simular-frete-btn simular-frete-btn-principal"
                 onClick={() => setAvisoSubstituicao(false)}>
                 Continuar
               </button>
@@ -164,31 +185,63 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
           // ===== Passos 2 a 5 =====
           <form onSubmit={calcular} noValidate>
             <div className="simular-frete-campos">
-              <Campo id="frete-peso" rotulo="Peso (kg)" placeholder="Ex.: 1200"
-                valor={peso} aoAlterar={alterar(setPeso, "peso")}
-                erro={erros.peso} desabilitado={ocupado} inputMode="decimal" />
+              <Campo
+                id="frete-peso"
+                rotulo="Peso (kg)"
+                placeholder="Ex.: 1200"
+                valor={peso}
+                aoAlterar={alterar(setPeso, "peso")}
+                erro={erros.peso}
+                desabilitado={ocupado}
+                inputMode="decimal"/>
 
-              <Campo id="frete-distancia" rotulo="Distância (km)" placeholder="Ex.: 350"
-                valor={distancia} aoAlterar={alterar(setDistancia, "distancia")}
-                erro={erros.distancia} desabilitado={ocupado} inputMode="decimal" />
+              <Campo
+                id="frete-distancia"
+                rotulo="Distância (km)"
+                placeholder="Ex.: 350"
+                valor={distancia}
+                aoAlterar={alterar(setDistancia, "distancia")}
+                erro={erros.distancia}
+                desabilitado={ocupado}
+                inputMode="decimal"/>
 
               <fieldset className="simular-frete-grupo">
                 <legend>Dimensões da carga (m)</legend>
                 <div className="simular-frete-medidas">
-                  <Campo id="frete-comprimento" rotulo="Comprimento" placeholder="Ex.: 2,0"
-                    valor={comprimento} aoAlterar={alterar(setComprimento, "comprimento")}
-                    erro={erros.comprimento} desabilitado={ocupado} inputMode="decimal" />
+                  <Campo
+                    id="frete-comprimento"
+                    rotulo="Comprimento"
+                    placeholder="Ex.: 2,0"
+                    valor={comprimento}
+                    aoAlterar={alterar(setComprimento, "comprimento")}
+                    erro={erros.comprimento}
+                    desabilitado={ocupado}
+                    inputMode="decimal"/>
 
-                  <Campo id="frete-largura" rotulo="Largura" placeholder="Ex.: 1,5"
-                    valor={largura} aoAlterar={alterar(setLargura, "largura")}
-                    erro={erros.largura} desabilitado={ocupado} inputMode="decimal" />
+                  <Campo
+                    id="frete-largura"
+                    rotulo="Largura"
+                    placeholder="Ex.: 1,5"
+                    valor={largura}
+                    aoAlterar={alterar(setLargura, "largura")}
+                    erro={erros.largura}
+                    desabilitado={ocupado}
+                    inputMode="decimal"/>
 
-                  <Campo id="frete-altura" rotulo="Altura" placeholder="Ex.: 1,8"
-                    valor={altura} aoAlterar={alterar(setAltura, "altura")}
-                    erro={erros.altura} desabilitado={ocupado} inputMode="decimal" />
+                  <Campo
+                    id="frete-altura"
+                    rotulo="Altura"
+                    placeholder="Ex.: 1,8"
+                    valor={altura}
+                    aoAlterar={alterar(setAltura, "altura")}
+                    erro={erros.altura}
+                    desabilitado={ocupado}
+                    inputMode="decimal"/>
                 </div>
                 {erros.dimensao && (
-                  <span className="simular-frete-erro-campo">{erros.dimensao}</span>
+                  <span className="simular-frete-erro-campo">
+                    {erros.dimensao}
+                  </span>
                 )}
               </fieldset>
             </div>
@@ -196,35 +249,53 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
             {resultado && (
               <div className="simular-frete-resultado" role="status">
                 <span>Valor estimado do frete</span>
-                <strong className="simular-frete-valor">{formatarReais(resultado.valor)}</strong>
+                <strong className="simular-frete-valor">
+                  {formatarReais(resultado.valor)}
+                </strong>
                 <ul>
                   <li>Volume: {formatarNumero(resultado.volume, 3)} m³</li>
-                  <li>Peso cubado: {formatarNumero(resultado.pesoCubado)} kg</li>
-                  <li>Peso considerado: {formatarNumero(resultado.pesoTaxavel)} kg</li>
-                  {resultado.valorMinimoAplicado && <li>Valor mínimo da tabela aplicado</li>}
+                  <li>
+                    Peso cubado: {formatarNumero(resultado.pesoCubado)} kg
+                  </li>
+                  <li>
+                    Peso considerado: {formatarNumero(resultado.pesoTaxavel)} kg
+                  </li>
+                  {resultado.valorMinimoAplicado && (
+                    <li>Valor mínimo da tabela aplicado</li>
+                  )}
                 </ul>
                 <small>* Valor estimado, não constitui cobrança.</small>
               </div>
             )}
 
             {mensagemErro && (
-              <p className="simular-frete-erro" role="alert">{mensagemErro}</p>
+              <p className="simular-frete-erro" role="alert">
+                {mensagemErro}
+              </p>
             )}
 
             <div className="simular-frete-btns">
               {/* FA02 - Descartar */}
-              <button type="button" className="simular-frete-btn" onClick={aoFechar}
+              <button
+                type="button"
+                className="simular-frete-btn"
+                onClick={aoFechar}
                 disabled={confirmando}>
                 Descartar
               </button>
 
               {resultado ? (
-                <button type="button" className="simular-frete-btn simular-frete-btn-principal"
-                  onClick={confirmar} disabled={ocupado}>
+                <button
+                  type="button"
+                  className="simular-frete-btn simular-frete-btn-principal"
+                  onClick={confirmar}
+                  disabled={ocupado}>
                   {confirmando ? "Vinculando..." : "Vincular ao agendamento"}
                 </button>
               ) : (
-                <button type="submit" className="simular-frete-btn simular-frete-btn-principal"
+                <button
+                  type="submit"
+                  className="simular-frete-btn simular-frete-btn-principal"
                   disabled={ocupado}>
                   {calculando ? "Calculando..." : "Calcular"}
                 </button>
@@ -237,13 +308,31 @@ function SimularFrete({ freteAtual, aoConfirmar, aoFechar }) {
   );
 }
 
-export function Campo({ id, rotulo, placeholder, valor, aoAlterar, erro, desabilitado, inputMode, ajuda }) {
+export function Campo({
+  id,
+  rotulo,
+  placeholder,
+  valor,
+  aoAlterar,
+  erro,
+  desabilitado,
+  inputMode,
+  ajuda,
+}) {
   return (
     <div className="simular-frete-campo">
       <label htmlFor={id}>{rotulo}</label>
-      <input id={id} type="text" inputMode={inputMode} placeholder={placeholder}
-        value={valor} onChange={aoAlterar} disabled={desabilitado}
-        aria-invalid={Boolean(erro)} className={erro ? "simular-frete-input-erro" : ""} />
+      <input
+        id={id}
+        type="text"
+        inputMode={inputMode}
+        placeholder={placeholder}
+        value={valor}
+        onChange={aoAlterar}
+        disabled={desabilitado}
+        aria-invalid={Boolean(erro)}
+        className={erro ? "simular-frete-input-erro" : ""}
+      />
       {ajuda && !erro && <span className="simular-frete-ajuda">{ajuda}</span>}
       {erro && <span className="simular-frete-erro-campo">{erro}</span>}
     </div>
@@ -255,10 +344,19 @@ export function ResumoFrete({ frete }) {
   if (!frete) return null;
   return (
     <ul className="simular-frete-resumo">
-      <li><span>Peso:</span> {formatarNumero(frete.peso)} kg</li>
-      <li><span>Distância:</span> {formatarNumero(frete.distancia)} km</li>
-      <li><span>Dimensão:</span> {frete.dimensao} m</li>
-      <li><span>Valor estimado:</span> <strong>{formatarReais(frete.valor)}</strong></li>
+      <li>
+        <span>Peso:</span> {formatarNumero(frete.peso)} kg
+      </li>
+      <li>
+        <span>Distância:</span> {formatarNumero(frete.distancia)} km
+      </li>
+      <li>
+        <span>Dimensão:</span> {frete.dimensao} m
+      </li>
+      <li>
+        <span>Valor estimado:</span>{" "}
+        <strong>{formatarReais(frete.valor)}</strong>
+      </li>
     </ul>
   );
 }

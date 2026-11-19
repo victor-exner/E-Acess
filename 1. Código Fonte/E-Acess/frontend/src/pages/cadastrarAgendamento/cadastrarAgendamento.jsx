@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/navbar/navbar";
-import SimularFrete, { ResumoFrete } from "../../components/simularFrete/simularFrete";
+import SimularFrete, {
+  ResumoFrete,
+} from "../../components/simularFrete/simularFrete";
 import "./cadastrarAgendamentos.css";
 import ManterMotoristaModal from "../../components/modal/manterMotorista/manterMotorista";
 import ManterTransportadoraModal from "../../components/modal/manterTransportadora/manterTransportadora";
@@ -24,7 +26,8 @@ function CadastrarAgendamento() {
   const [gerenciandoMotorista, setGerenciandoMotorista] = useState(false);
 
   // Manter Transportadora - controle do modal de transportadoras
-  const [gerenciandoTransportadora, setGerenciandoTransportadora] = useState(false);
+  const [gerenciandoTransportadora, setGerenciandoTransportadora] =
+    useState(false);
 
   const [transportadoras, setTransportadoras] = useState([]);
   const [motoristas, setMotoristas] = useState([]);
@@ -39,14 +42,16 @@ function CadastrarAgendamento() {
   useEffect(() => {
     async function carregarOpcoes() {
       try {
-        const [respostaTransportadoras, respostaMotoristas] = await Promise.all([
-          fetch("http://localhost:8080/transportadoras"),
-          fetch("http://localhost:8080/motoristas"),
-        ]);
+        const [respostaTransportadoras, respostaMotoristas] = await Promise.all(
+          [
+            fetch("http://localhost:8080/transportadoras"),
+            fetch("http://localhost:8080/motoristas"),
+          ],
+        );
 
         if (!respostaTransportadoras.ok || !respostaMotoristas.ok) {
           throw new Error(
-            "Não foi possível carregar as transportadoras e os motoristas."
+            "Não foi possível carregar as transportadoras e os motoristas.",
           );
         }
 
@@ -57,7 +62,7 @@ function CadastrarAgendamento() {
         setMotoristas(dadosMotoristas);
       } catch (erro) {
         setMensagemErro(
-          "Erro ao carregar os dados. Verifique o backend e a configuração de CORS."
+          "Erro ao carregar os dados. Verifique o backend e a configuração de CORS.",
         );
       } finally {
         setCarregando(false);
@@ -115,7 +120,7 @@ function CadastrarAgendamento() {
               distancia: frete.distancia,
               dimensao: frete.dimensao,
             }),
-          }
+          },
         );
 
         if (!respostaFrete.ok) {
@@ -123,7 +128,7 @@ function CadastrarAgendamento() {
           throw new Error(
             "Agendamento cadastrado, mas o frete não foi vinculado: " +
               (corpo.mensagem ?? "erro inesperado") +
-              ". Vincule o frete pela tela de edição."
+              ". Vincule o frete pela tela de edição.",
           );
         }
       }
@@ -164,7 +169,9 @@ function CadastrarAgendamento() {
     setTransportadoras((atuais) => {
       const existe = atuais.some((t) => t.id === novaTransportadora.id);
       return existe
-        ? atuais.map((t) => (t.id === novaTransportadora.id ? novaTransportadora : t))
+        ? atuais.map((t) =>
+            t.id === novaTransportadora.id ? novaTransportadora : t,
+          )
         : [...atuais, novaTransportadora];
     });
     setTransportadoraId(String(novaTransportadora.id));
@@ -183,12 +190,15 @@ function CadastrarAgendamento() {
         <div className="row justify-content-center">
           <div className="col-12 col-lg-9 col-xl-8">
             <section className="novo-agendamento-card p-4">
+
               <header className="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
                 <h1 className="novo-agendamento-title h2 mb-0 fw-bold">
                   Novo agendamento
                 </h1>
                 <div>
-                  <span className="fw-bold texto-azul-escuro me-2">Status Inicial:</span>
+                  <span className="fw-bold texto-azul-escuro me-2">
+                    Status Inicial:
+                  </span>
                   <span className="badge bg-warning text-dark">Pendente</span>
                 </div>
               </header>
@@ -213,8 +223,7 @@ function CadastrarAgendamento() {
                           value={data}
                           onChange={(event) => setData(event.target.value)}
                           required
-                          disabled={salvando}
-                        />
+                          disabled={salvando}/>
                       </div>
 
                       <div>
@@ -227,11 +236,12 @@ function CadastrarAgendamento() {
                           value={transportadoraId}
                           onChange={(event) => setTransportadoraId(event.target.value)}
                           required
-                          disabled={salvando}
-                        >
+                          disabled={salvando}>
                           <option value="">Selecione uma transportadora</option>
                           {transportadoras.map((transportadora) => (
-                            <option key={transportadora.id} value={transportadora.id}>
+                            <option
+                              key={transportadora.id}
+                              value={transportadora.id}>
                               {transportadora.nome}
                             </option>
                           ))}
@@ -241,8 +251,7 @@ function CadastrarAgendamento() {
                           type="button"
                           className="btn btn-sm novoAgendamento-btns mt-2"
                           onClick={() => setGerenciandoTransportadora(true)}
-                          disabled={salvando}
-                        >
+                          disabled={salvando}>
                           Gerenciar transportadoras
                         </button>
                       </div>
@@ -255,10 +264,9 @@ function CadastrarAgendamento() {
                           id="motorista-agendamento"
                           className="form-select campo-input"
                           value={motoristaId}
-                          onChange={(event) => setMotoristaId(event.target.value)}
+                          onChange={(event) =>setMotoristaId(event.target.value)}
                           required
-                          disabled={salvando}
-                        >
+                          disabled={salvando}>
                           <option value="">Selecione um motorista</option>
                           {motoristas.map((motorista) => (
                             <option key={motorista.id} value={motorista.id}>
@@ -271,8 +279,7 @@ function CadastrarAgendamento() {
                           type="button"
                           className="btn btn-sm novoAgendamento-btns mt-2"
                           onClick={() => setGerenciandoMotorista(true)}
-                          disabled={salvando}
-                        >
+                          disabled={salvando}>
                           Gerenciar motoristas
                         </button>
                       </div>
@@ -290,8 +297,7 @@ function CadastrarAgendamento() {
                           onChange={(event) => setPlaca(event.target.value.toUpperCase())}
                           maxLength={10}
                           required
-                          disabled={salvando}
-                        />
+                          disabled={salvando}/>
                       </div>
                     </div>
 
@@ -307,9 +313,10 @@ function CadastrarAgendamento() {
                           value={tipoAgendamento}
                           onChange={(event) => setTipoAgendamento(event.target.value)}
                           required
-                          disabled={salvando}
-                        >
-                          <option value="">Selecione o tipo do agendamento</option>
+                          disabled={salvando}>
+                          <option value="">
+                            Selecione o tipo do agendamento
+                          </option>
                           <option value="recebimento">Recebimento</option>
                           <option value="expedicao">Expedição</option>
                         </select>
@@ -327,8 +334,7 @@ function CadastrarAgendamento() {
                           placeholder="Descreva os detalhes do agendamento..."
                           rows={5}
                           maxLength={2000}
-                          disabled={salvando}
-                        />
+                          disabled={salvando}/>
                       </div>
 
                       {/* BOX FRETE (UC05) */}
@@ -344,7 +350,9 @@ function CadastrarAgendamento() {
                             </small>
                           </>
                         ) : (
-                          <small className="text-muted">Nenhum frete vinculado.</small>
+                          <small className="text-muted">
+                            Nenhum frete vinculado.
+                          </small>
                         )}
                         <div>
                           <button
@@ -354,8 +362,7 @@ function CadastrarAgendamento() {
                               setMensagemSucesso("");
                               setSimulandoFrete(true);
                             }}
-                            disabled={salvando}
-                          >
+                            disabled={salvando}>
                             Simular frete
                           </button>
                         </div>
@@ -382,16 +389,14 @@ function CadastrarAgendamento() {
                       type="button"
                       className="btn btn-outline-secondary fw-bold px-4"
                       onClick={cancelarCadastro}
-                      disabled={salvando}
-                    >
+                      disabled={salvando}>
                       Cancelar
                     </button>
 
                     <button
                       type="submit"
                       className="btn novoAgendamento-btns px-4"
-                      disabled={salvando}
-                    >
+                      disabled={salvando}>
                       {salvando ? "Salvando..." : "Salvar agendamento"}
                     </button>
                   </div>
@@ -406,22 +411,19 @@ function CadastrarAgendamento() {
         <SimularFrete
           freteAtual={frete}
           aoConfirmar={vincularFrete}
-          aoFechar={() => setSimulandoFrete(false)}
-        />
+          aoFechar={() => setSimulandoFrete(false)}/>
       )}
 
       {gerenciandoMotorista && (
         <ManterMotoristaModal
           aoFechar={() => setGerenciandoMotorista(false)}
-          aoSelecionarMotorista={vincularMotorista}
-        />
+          aoSelecionarMotorista={vincularMotorista}/>
       )}
 
       {gerenciandoTransportadora && (
         <ManterTransportadoraModal
           aoFechar={() => setGerenciandoTransportadora(false)}
-          aoSelecionarTransportadora={vincularTransportadora}
-        />
+          aoSelecionarTransportadora={vincularTransportadora}/>
       )}
     </div>
   );

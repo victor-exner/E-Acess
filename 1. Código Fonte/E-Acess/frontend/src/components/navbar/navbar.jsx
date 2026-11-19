@@ -17,24 +17,16 @@ function Navbar() {
     <header className="container pt-3">
       <nav className="navbar navbar-custom px-4 py-2">
         <div className="container-fluid d-flex justify-content-between align-items-center">
-          <a
-            className="navbar-brand d-flex align-items-center m-0"
-            href="#/"
-            onClick={(e) => {
-              e.preventDefault();
+          <a className="navbar-brand d-flex align-items-center m-0" href="#/" onClick={(e) => {e.preventDefault();
               if (usuarioLogado) navigate("/agendamentos");
-            }}
-          >
+            }}>
             <img src={logo} alt="E-Acess" className="logo-img" />
           </a>
 
           <div className="d-flex align-items-center gap-2">
             {usuarioLogado ? (
               <>
-                <button
-                  className="btn navbar-btn"
-                  onClick={() => navigate("/agendamentos")}
-                >
+                <button className="btn navbar-btn" onClick={() => navigate("/agendamentos")}>
                   Home
                 </button>
                 <button className="btn navbar-btn" onClick={sair}>

@@ -53,3 +53,8 @@
     background-color: rgb(0, 126, 168);
     color: #fff;
 }
+
+.badge-status, .badge-id{
+    padding: 0.4rem 0.8rem;
+    font-size: 14px;
+}

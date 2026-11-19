@@ -16,7 +16,7 @@ function Agendamentos() {
     motorista: "",
     placa: "",
     tipoAgendamento: "",
-    status: ""
+    status: "",
   });
 
   const [carregando, setCarregando] = useState(true);
@@ -56,8 +56,12 @@ function Agendamentos() {
 
     const resultados = agendamentos.filter((agendamento) => {
       const correspondeId = String(agendamento.id).includes(filtros.id.trim());
-      const correspondeData = String(agendamento.data ?? "").includes(filtros.data.trim());
-      const correspondeTransportadora = String(agendamento.transportadora?.nome ?? "")
+      const correspondeData = String(agendamento.data ?? "").includes(
+        filtros.data.trim(),
+      );
+      const correspondeTransportadora = String(
+        agendamento.transportadora?.nome ?? "",
+      )
         .toLowerCase()
         .includes(filtros.transportadora.trim().toLowerCase());
       const correspondeMotorista = String(agendamento.motorista?.nome ?? "")
@@ -70,8 +74,10 @@ function Agendamentos() {
         filtros.status === "" || agendamento.status === filtros.status;
       const correspondeTipo =
         filtros.tipoAgendamento === "" ||
-        (filtros.tipoAgendamento === "expedicao" && agendamento.coleta === true) ||
-        (filtros.tipoAgendamento === "recebimento" && agendamento.coleta === false);
+        (filtros.tipoAgendamento === "expedicao" &&
+          agendamento.coleta === true) ||
+        (filtros.tipoAgendamento === "recebimento" &&
+          agendamento.coleta === false);
 
       return (
         correspondeId &&
@@ -95,24 +101,27 @@ function Agendamentos() {
       motorista: "",
       placa: "",
       tipoAgendamento: "",
-      status: ""
+      status: "",
     });
     setAgendamentosFiltrados(agendamentos);
   }
 
   function formatarData(data) {
-  if (!data) return "—";
+    if (!data) return "—";
 
-  const [ano, mes, dia] = data.split("-");
+    const [ano, mes, dia] = data.split("-");
 
-  return `${dia}/${mes}/${ano}`;
+    return `${dia}/${mes}/${ano}`;
   }
 
   function renderBadgeStatus(status) {
     const texto = String(status ?? "—").replaceAll("_", " ");
-    if (status === "CONCLUIDO") return <span className="badge bg-success">{texto}</span>;
-    if (status === "ANDAMENTO") return <span className="badge bg-primary">{texto}</span>;
-    if (status === "PENDENTE") return <span className="badge bg-warning text-dark">{texto}</span>;
+    if (status === "CONCLUIDO")
+      return <span className="badge bg-success">{texto}</span>;
+    if (status === "ANDAMENTO")
+      return <span className="badge bg-primary">{texto}</span>;
+    if (status === "PENDENTE")
+      return <span className="badge bg-warning text-dark">{texto}</span>;
     return <span className="badge bg-secondary">{texto}</span>;
   }
 
@@ -129,8 +138,7 @@ function Agendamentos() {
             <button
               type="button"
               className="btn btn-novo-agendamento px-4"
-              onClick={() => navigate("/cadastrar-agendamento")}
-            >
+              onClick={() => navigate("/cadastrar-agendamento")}>
               + Novo agendamento
             </button>
           </header>
@@ -151,8 +159,7 @@ function Agendamentos() {
                     className="form-control form-control-sm filtro-input"
                     placeholder="ID"
                     value={filtros.id}
-                    onChange={atualizarFiltro}
-                  />
+                    onChange={atualizarFiltro}/>
                 </div>
 
                 <div>
@@ -165,8 +172,7 @@ function Agendamentos() {
                     type="date"
                     className="form-control form-control-sm filtro-input"
                     value={filtros.data}
-                    onChange={atualizarFiltro}
-                  />
+                    onChange={atualizarFiltro}/>
                 </div>
 
                 <div>
@@ -180,8 +186,7 @@ function Agendamentos() {
                     className="form-control form-control-sm filtro-input"
                     placeholder="Transportadora"
                     value={filtros.transportadora}
-                    onChange={atualizarFiltro}
-                  />
+                    onChange={atualizarFiltro}/>
                 </div>
 
                 <div>
@@ -195,8 +200,7 @@ function Agendamentos() {
                     className="form-control form-control-sm filtro-input"
                     placeholder="Motorista"
                     value={filtros.motorista}
-                    onChange={atualizarFiltro}
-                  />
+                    onChange={atualizarFiltro}/>
                 </div>
 
                 <div>
@@ -210,8 +214,7 @@ function Agendamentos() {
                     className="form-control form-control-sm filtro-input"
                     placeholder="Placa"
                     value={filtros.placa}
-                    onChange={atualizarFiltro}
-                  />
+                    onChange={atualizarFiltro}/>
                 </div>
 
                 <div>
@@ -223,8 +226,7 @@ function Agendamentos() {
                     name="tipoAgendamento"
                     className="form-select form-select-sm filtro-input"
                     value={filtros.tipoAgendamento}
-                    onChange={atualizarFiltro}
-                  >
+                    onChange={atualizarFiltro}>
                     <option value="">Todos</option>
                     <option value="expedicao">Expedição</option>
                     <option value="recebimento">Recebimento</option>
@@ -240,8 +242,7 @@ function Agendamentos() {
                     id="filtro-status"
                     className="form-select form-select-sm filtro-input"
                     value={filtros.status}
-                    onChange={atualizarFiltro}
-                  >
+                    onChange={atualizarFiltro}>
                     <option value="">Todos</option>
                     <option value="ANDAMENTO">Andamento</option>
                     <option value="PENDENTE">Pendente</option>
@@ -251,14 +252,15 @@ function Agendamentos() {
 
                 {/* Botões alinhados com Flexbox */}
                 <div className="d-flex align-items-end gap-2">
-                  <button type="submit" className="btn btn-sm filtro-btn flex-fill">
+                  <button
+                    type="submit"
+                    className="btn btn-sm filtro-btn flex-fill">
                     Filtrar
                   </button>
                   <button
                     type="button"
                     className="btn btn-sm filtro-btn flex-fill"
-                    onClick={limparFiltros}
-                  >
+                    onClick={limparFiltros}>
                     Limpar
                   </button>
                 </div>
@@ -305,8 +307,7 @@ function Agendamentos() {
                       <tr
                         key={agendamento.id}
                         className="agendamento-linha"
-                        onClick={() => navigate(`/editar-agendamento/${agendamento.id}`)}
-                      >
+                        onClick={() => navigate(`/editar-agendamento/${agendamento.id}`)}>
                         <td className="ps-3 fw-bold">{agendamento.id}</td>
                         <td>{formatarData(agendamento.data)}</td>
                         <td>{agendamento.transportadora?.nome || "—"}</td>
@@ -316,8 +317,8 @@ function Agendamentos() {
                           {agendamento.coleta === true
                             ? "Expedição"
                             : agendamento.coleta === false
-                            ? "Recebimento"
-                            : "—"}
+                              ? "Recebimento"
+                              : "—"}
                         </td>
                         <td>{renderBadgeStatus(agendamento.status)}</td>
                       </tr>

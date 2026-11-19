@@ -31,7 +31,8 @@ function ManterMotoristaModal({ aoFechar, aoSelecionarMotorista }) {
         : `${API}/motoristas`;
 
       const resposta = await fetch(url);
-      if (!resposta.ok) throw new Error("Erro ao carregar lista de motoristas.");
+      if (!resposta.ok)
+        throw new Error("Erro ao carregar lista de motoristas.");
 
       const dados = await resposta.json();
       setMotoristas(dados);
@@ -89,7 +90,9 @@ function ManterMotoristaModal({ aoFechar, aoSelecionarMotorista }) {
     const ehEdicao = Boolean(motoristaEmEdicao);
 
     try {
-      const url = ehEdicao ? `${API}/motoristas/${motoristaEmEdicao.id}` : `${API}/motoristas`;
+      const url = ehEdicao
+        ? `${API}/motoristas/${motoristaEmEdicao.id}`
+        : `${API}/motoristas`;
       const metodo = ehEdicao ? "PUT" : "POST";
 
       const resposta = await fetch(url, {
@@ -127,7 +130,9 @@ function ManterMotoristaModal({ aoFechar, aoSelecionarMotorista }) {
 
   // FA03 - Excluir com validação de vínculo (RN04)
   async function excluirMotorista(id, nomeMotorista) {
-    const confirmou = window.confirm(`Deseja realmente excluir o motorista "${nomeMotorista}"?`);
+    const confirmou = window.confirm(
+      `Deseja realmente excluir o motorista "${nomeMotorista}"?`,
+    );
     if (!confirmou) return;
 
     setMensagemErro("");
@@ -141,11 +146,14 @@ function ManterMotoristaModal({ aoFechar, aoSelecionarMotorista }) {
       const retorno = await resposta.json().catch(() => ({}));
 
       if (!resposta.ok) {
-        throw new Error(retorno.mensagem || "Não foi possível excluir o motorista.");
+        throw new Error(
+          retorno.mensagem || "Não foi possível excluir o motorista.",
+        );
       }
 
       setMensagemSucesso("Motorista excluído com sucesso!");
       carregarMotoristas();
+      window.location.reload();
     } catch (erro) {
       setMensagemErro(erro.message);
     }
@@ -155,26 +163,49 @@ function ManterMotoristaModal({ aoFechar, aoSelecionarMotorista }) {
     <div className="motorista-modal-fundo" role="dialog" aria-modal="true">
       <div className="motorista-modal-card">
         <header className="motorista-modal-cabecalho">
-          <h2>{modo === "LISTA" ? "Gerenciar Motoristas" : (motoristaEmEdicao ? "Alterar Motorista" : "Novo Motorista")}</h2>
-          <button type="button" className="motorista-modal-fechar" onClick={aoFechar}>&times;</button>
+          <h2>
+            {modo === "LISTA"
+              ? "Gerenciar Motoristas"
+              : motoristaEmEdicao
+                ? "Alterar Motorista"
+                : "Novo Motorista"}
+          </h2>
+          <button
+            type="button"
+            className="motorista-modal-fechar"
+            onClick={aoFechar}
+          >
+            &times;
+          </button>
         </header>
 
         {mensagemErro && <p className="motorista-msg-erro">{mensagemErro}</p>}
-        {mensagemSucesso && <p className="motorista-msg-sucesso">{mensagemSucesso}</p>}
+        {mensagemSucesso && (
+          <p className="motorista-msg-sucesso">{mensagemSucesso}</p>
+        )}
 
         {modo === "LISTA" ? (
           <div className="motorista-conteudo-lista">
             <div className="motorista-barra-acoes">
-              <form onSubmit={handlePesquisar} className="motorista-pesquisa-form">
+              <form
+                onSubmit={handlePesquisar}
+                className="motorista-pesquisa-form"
+              >
                 <input
                   type="text"
                   placeholder="Pesquisar por nome ou documento..."
                   value={termoBusca}
                   onChange={(e) => setTermoBusca(e.target.value)}
                 />
-                <button type="submit" className="motorista-btn">Pesquisar</button>
+                <button type="submit" className="motorista-btn">
+                  Pesquisar
+                </button>
               </form>
-              <button type="button" className="motorista-btn motorista-btn-novo" onClick={iniciarNovo}>
+              <button
+                type="button"
+                className="motorista-btn motorista-btn-novo"
+                onClick={iniciarNovo}
+              >
                 + Novo Motorista
               </button>
             </div>
@@ -207,24 +238,21 @@ function ManterMotoristaModal({ aoFechar, aoSelecionarMotorista }) {
                           onClick={() => {
                             aoSelecionarMotorista(m);
                             aoFechar();
-                          }}
-                        >
+                          }}>
                           Selecionar
                         </button>
                         <button
                           type="button"
                           className="motorista-btn-acao"
                           title="Editar"
-                          onClick={() => iniciarEdicao(m)}
-                        >
+                          onClick={() => iniciarEdicao(m)}>
                           Editar
                         </button>
                         <button
                           type="button"
                           className="motorista-btn-acao motorista-btn-del"
                           title="Excluir"
-                          onClick={() => excluirMotorista(m.id, m.nome)}
-                        >
+                          onClick={() => excluirMotorista(m.id, m.nome)}>
                           Excluir
                         </button>
                       </td>
@@ -235,7 +263,10 @@ function ManterMotoristaModal({ aoFechar, aoSelecionarMotorista }) {
             )}
 
             <div className="motorista-modal-rodape">
-              <button type="button" className="motorista-btn" onClick={aoFechar}>
+              <button
+                type="button"
+                className="motorista-btn"
+                onClick={aoFechar}>
                 Fechar
               </button>
             </div>
@@ -252,8 +283,7 @@ function ManterMotoristaModal({ aoFechar, aoSelecionarMotorista }) {
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 placeholder="Ex.: José Souza"
-                disabled={salvando}
-              />
+                disabled={salvando}/>
             </div>
 
             <div className="motorista-campo">
@@ -265,8 +295,7 @@ function ManterMotoristaModal({ aoFechar, aoSelecionarMotorista }) {
                 value={documento}
                 onChange={(e) => setDocumento(e.target.value)}
                 placeholder="Ex.: 12345678901"
-                disabled={salvando}
-              />
+                disabled={salvando}/>
             </div>
 
             <div className="motorista-modal-rodape">
@@ -274,16 +303,18 @@ function ManterMotoristaModal({ aoFechar, aoSelecionarMotorista }) {
                 type="button"
                 className="motorista-btn"
                 onClick={() => setModo("LISTA")}
-                disabled={salvando}
-              >
+                disabled={salvando}>
                 Voltar à Lista
               </button>
               <button
                 type="submit"
                 className="motorista-btn motorista-btn-salvar"
-                disabled={salvando}
-              >
-                {salvando ? "A gravar..." : (motoristaEmEdicao ? "Atualizar" : "Cadastrar")}
+                disabled={salvando}>
+                {salvando
+                  ? "A gravar..."
+                  : motoristaEmEdicao
+                    ? "Atualizar"
+                    : "Cadastrar"}
               </button>
             </div>
           </form>

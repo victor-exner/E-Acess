@@ -30,7 +30,8 @@ function ManterTransportadoraModal({ aoFechar, aoSelecionarTransportadora }) {
         : `${API}/transportadoras`;
 
       const resposta = await fetch(url);
-      if (!resposta.ok) throw new Error("Erro ao carregar lista de transportadoras.");
+      if (!resposta.ok)
+        throw new Error("Erro ao carregar lista de transportadoras.");
 
       const dados = await resposta.json();
       setTransportadoras(dados);
@@ -82,7 +83,9 @@ function ManterTransportadoraModal({ aoFechar, aoSelecionarTransportadora }) {
     const ehEdicao = Boolean(transportadoraEmEdicao);
 
     try {
-      const url = ehEdicao ? `${API}/transportadoras/${transportadoraEmEdicao.id}` : `${API}/transportadoras`;
+      const url = ehEdicao
+        ? `${API}/transportadoras/${transportadoraEmEdicao.id}`
+        : `${API}/transportadoras`;
       const metodo = ehEdicao ? "PUT" : "POST";
 
       const resposta = await fetch(url, {
@@ -120,7 +123,9 @@ function ManterTransportadoraModal({ aoFechar, aoSelecionarTransportadora }) {
 
   // FA03 - Excluir com validação de vínculo (RN03)
   async function excluirTransportadora(id, nomeTransportadora) {
-    const confirmou = window.confirm(`Deseja realmente excluir a transportadora "${nomeTransportadora}"?`);
+    const confirmou = window.confirm(
+      `Deseja realmente excluir a transportadora "${nomeTransportadora}"?`,
+    );
     if (!confirmou) return;
 
     setMensagemErro("");
@@ -134,11 +139,14 @@ function ManterTransportadoraModal({ aoFechar, aoSelecionarTransportadora }) {
       const retorno = await resposta.json().catch(() => ({}));
 
       if (!resposta.ok) {
-        throw new Error(retorno.mensagem || "Não foi possível excluir a transportadora.");
+        throw new Error(
+          retorno.mensagem || "Não foi possível excluir a transportadora.",
+        );
       }
 
       setMensagemSucesso("Transportadora excluída com sucesso!");
       carregarTransportadoras();
+      window.location.reload();
     } catch (erro) {
       setMensagemErro(erro.message);
     }
@@ -148,26 +156,47 @@ function ManterTransportadoraModal({ aoFechar, aoSelecionarTransportadora }) {
     <div className="transportadora-modal-fundo" role="dialog" aria-modal="true">
       <div className="transportadora-modal-card">
         <header className="transportadora-modal-cabecalho">
-          <h2>{modo === "LISTA" ? "Gerenciar Transportadoras" : (transportadoraEmEdicao ? "Alterar Transportadora" : "Nova Transportadora")}</h2>
-          <button type="button" className="transportadora-modal-fechar" onClick={aoFechar}>&times;</button>
+          <h2>
+            {modo === "LISTA"
+              ? "Gerenciar Transportadoras"
+              : transportadoraEmEdicao
+                ? "Alterar Transportadora"
+                : "Nova Transportadora"}
+          </h2>
+          <button
+            type="button"
+            className="transportadora-modal-fechar"
+            onClick={aoFechar}>
+            &times;
+          </button>
         </header>
 
-        {mensagemErro && <p className="transportadora-msg-erro">{mensagemErro}</p>}
-        {mensagemSucesso && <p className="transportadora-msg-sucesso">{mensagemSucesso}</p>}
+        {mensagemErro && (
+          <p className="transportadora-msg-erro">{mensagemErro}</p>
+        )}
+        {mensagemSucesso && (
+          <p className="transportadora-msg-sucesso">{mensagemSucesso}</p>
+        )}
 
         {modo === "LISTA" ? (
           <div className="transportadora-conteudo-lista">
             <div className="transportadora-barra-acoes">
-              <form onSubmit={handlePesquisar} className="transportadora-pesquisa-form">
+              <form
+                onSubmit={handlePesquisar}
+                className="transportadora-pesquisa-form">
                 <input
                   type="text"
                   placeholder="Pesquisar por nome..."
                   value={termoBusca}
-                  onChange={(e) => setTermoBusca(e.target.value)}
-                />
-                <button type="submit" className="transportadora-btn">Pesquisar</button>
+                  onChange={(e) => setTermoBusca(e.target.value)}/>
+                <button type="submit" className="transportadora-btn">
+                  Pesquisar
+                </button>
               </form>
-              <button type="button" className="transportadora-btn transportadora-btn-novo" onClick={iniciarNova}>
+              <button
+                type="button"
+                className="transportadora-btn transportadora-btn-novo"
+                onClick={iniciarNova}>
                 + Nova Transportadora
               </button>
             </div>
@@ -175,7 +204,9 @@ function ManterTransportadoraModal({ aoFechar, aoSelecionarTransportadora }) {
             {carregando ? (
               <p>A carregar transportadoras...</p>
             ) : transportadoras.length === 0 ? (
-              <p className="transportadora-vazio">Nenhuma transportadora encontrada.</p>
+              <p className="transportadora-vazio">
+                Nenhuma transportadora encontrada.
+              </p>
             ) : (
               <table className="transportadora-tabela">
                 <thead>
@@ -198,24 +229,21 @@ function ManterTransportadoraModal({ aoFechar, aoSelecionarTransportadora }) {
                           onClick={() => {
                             aoSelecionarTransportadora(t);
                             aoFechar();
-                          }}
-                        >
+                          }}>
                           Selecionar
                         </button>
                         <button
                           type="button"
                           className="transportadora-btn-acao"
                           title="Editar"
-                          onClick={() => iniciarEdicao(t)}
-                        >
+                          onClick={() => iniciarEdicao(t)}>
                           Editar
                         </button>
                         <button
                           type="button"
                           className="transportadora-btn-acao transportadora-btn-del"
                           title="Excluir"
-                          onClick={() => excluirTransportadora(t.id, t.nome)}
-                        >
+                          onClick={() => excluirTransportadora(t.id, t.nome)}>
                           Excluir
                         </button>
                       </td>
@@ -226,7 +254,10 @@ function ManterTransportadoraModal({ aoFechar, aoSelecionarTransportadora }) {
             )}
 
             <div className="transportadora-modal-rodape">
-              <button type="button" className="transportadora-btn" onClick={aoFechar}>
+              <button
+                type="button"
+                className="transportadora-btn"
+                onClick={aoFechar}>
                 Fechar
               </button>
             </div>
@@ -243,8 +274,7 @@ function ManterTransportadoraModal({ aoFechar, aoSelecionarTransportadora }) {
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 placeholder="Ex.: Transportes Alfa"
-                disabled={salvando}
-              />
+                disabled={salvando}/>
             </div>
 
             <div className="transportadora-modal-rodape">
@@ -252,16 +282,18 @@ function ManterTransportadoraModal({ aoFechar, aoSelecionarTransportadora }) {
                 type="button"
                 className="transportadora-btn"
                 onClick={() => setModo("LISTA")}
-                disabled={salvando}
-              >
+                disabled={salvando}>
                 Voltar à Lista
               </button>
               <button
                 type="submit"
                 className="transportadora-btn transportadora-btn-salvar"
-                disabled={salvando}
-              >
-                {salvando ? "A gravar..." : (transportadoraEmEdicao ? "Atualizar" : "Cadastrar")}
+                disabled={salvando}>
+                {salvando
+                  ? "A gravar..."
+                  : transportadoraEmEdicao
+                    ? "Atualizar"
+                    : "Cadastrar"}
               </button>
             </div>
           </form>

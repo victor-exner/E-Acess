@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/navbar/navbar";
-import SimularFrete, { ResumoFrete } from "../../components/simularFrete/simularFrete";
+import SimularFrete, {
+  ResumoFrete,
+} from "../../components/simularFrete/simularFrete";
 import "./editarAgendamento.css";
 
 function EditarAgendamento() {
@@ -19,7 +21,9 @@ function EditarAgendamento() {
   useEffect(() => {
     async function carregarAgendamento() {
       try {
-        const resposta = await fetch(`http://localhost:8080/agendamentos/${id}`);
+        const resposta = await fetch(
+          `http://localhost:8080/agendamentos/${id}`,
+        );
 
         if (!resposta.ok) {
           throw new Error("Não foi possível encontrar o agendamento.");
@@ -96,15 +100,18 @@ function EditarAgendamento() {
 
   // UC05 - passo 6: grava (ou substitui) o frete do agendamento
   async function vincularFrete(dadosFrete) {
-    const resposta = await fetch(`http://localhost:8080/agendamentos/${id}/frete`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        peso: dadosFrete.peso,
-        distancia: dadosFrete.distancia,
-        dimensao: dadosFrete.dimensao,
-      }),
-    });
+    const resposta = await fetch(
+      `http://localhost:8080/agendamentos/${id}/frete`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          peso: dadosFrete.peso,
+          distancia: dadosFrete.distancia,
+          dimensao: dadosFrete.dimensao,
+        }),
+      },
+    );
 
     if (!resposta.ok) {
       const corpo = await resposta.json().catch(() => ({}));
@@ -121,9 +128,13 @@ function EditarAgendamento() {
 
   function renderBadgeStatus(status) {
     const texto = String(status ?? "PENDENTE").replaceAll("_", " ");
-    if (status === "CONCLUIDO") return <span className="badge bg-success">{texto}</span>;
-    if (status === "ANDAMENTO") return <span className="badge bg-primary">{texto}</span>;
-    return <span className="badge bg-warning text-dark">{texto}</span>;
+    if (status === "CONCLUIDO")
+      return <span className="badge bg-success">{texto}</span>;
+    if (status === "ANDAMENTO")
+      return <span className="badge bg-primary">{texto}</span>;
+    return (
+      <span className="badge bg-warning text-dark badge-status">{texto}</span>
+    );
   }
 
   return (
@@ -165,7 +176,7 @@ function EditarAgendamento() {
                     </div>
 
                     <div className="d-flex align-items-center gap-2">
-                      <span className="badge bg-secondary fs-6">
+                      <span className="badge bg-secondary fs-6" badge-id>
                         ID #{agendamento.id}
                       </span>
                       {renderBadgeStatus(agendamento.status)}
@@ -189,8 +200,7 @@ function EditarAgendamento() {
                             value={agendamento.data ?? ""}
                             onChange={atualizarCampo}
                             required
-                            disabled={salvando}
-                          />
+                            disabled={salvando}/>
                         </div>
 
                         <div>
@@ -203,8 +213,7 @@ function EditarAgendamento() {
                             className="form-control campo-readonly"
                             value={agendamento.transportadora?.nome ?? ""}
                             readOnly
-                            disabled
-                          />
+                            disabled/>
                         </div>
 
                         <div>
@@ -217,8 +226,7 @@ function EditarAgendamento() {
                             className="form-control campo-readonly"
                             value={agendamento.motorista?.nome ?? ""}
                             readOnly
-                            disabled
-                          />
+                            disabled/>
                         </div>
 
                         <div>
@@ -234,8 +242,7 @@ function EditarAgendamento() {
                             value={agendamento.placa ?? ""}
                             onChange={atualizarCampo}
                             required
-                            disabled={salvando}
-                          />
+                            disabled={salvando}/>
                         </div>
                       </div>
 
@@ -253,8 +260,7 @@ function EditarAgendamento() {
                               value={agendamento.status ?? "PENDENTE"}
                               onChange={atualizarCampo}
                               required
-                              disabled={salvando}
-                            >
+                              disabled={salvando}>
                               <option value="PENDENTE">Pendente</option>
                               <option value="ANDAMENTO">Andamento</option>
                               <option value="CONCLUIDO">Concluído</option>
@@ -270,17 +276,14 @@ function EditarAgendamento() {
                               name="coleta"
                               className="form-select campo-input"
                               value={String(agendamento.coleta)}
-                              onChange={(event) => {
-                                setAgendamento((atual) => ({
-                                  ...atual,
-                                  coleta: event.target.value === "true",
+                              onChange={(event) => {setAgendamento((atual) => ({
+                                  ...atual, coleta: event.target.value === "true",
                                 }));
                                 setMensagemErro("");
                                 setMensagemSucesso("");
                               }}
                               required
-                              disabled={salvando}
-                            >
+                              disabled={salvando}>
                               <option value="false">Recebimento</option>
                               <option value="true">Expedição</option>
                             </select>
@@ -299,8 +302,7 @@ function EditarAgendamento() {
                             value={agendamento.observacao ?? ""}
                             onChange={atualizarCampo}
                             placeholder="Informe as observações do agendamento"
-                            disabled={salvando}
-                          />
+                            disabled={salvando}/>
                         </div>
 
                         {/* BOX FRETE (UC05) */}
@@ -311,7 +313,9 @@ function EditarAgendamento() {
                           {agendamento.frete ? (
                             <ResumoFrete frete={agendamento.frete} />
                           ) : (
-                            <small className="text-muted">Nenhum frete vinculado.</small>
+                            <small className="text-muted">
+                              Nenhum frete vinculado.
+                            </small>
                           )}
                           <div>
                             <button
@@ -321,8 +325,7 @@ function EditarAgendamento() {
                                 setMensagemSucesso("");
                                 setSimulandoFrete(true);
                               }}
-                              disabled={salvando}
-                            >
+                              disabled={salvando}>
                               Simular frete
                             </button>
                           </div>
@@ -349,16 +352,14 @@ function EditarAgendamento() {
                         type="button"
                         className="btn btn-outline-secondary fw-bold px-4"
                         onClick={() => navigate("/agendamentos")}
-                        disabled={salvando}
-                      >
+                        disabled={salvando}>
                         Voltar
                       </button>
 
                       <button
                         type="submit"
                         className="btn editarAgendamento-btns px-4"
-                        disabled={salvando}
-                      >
+                        disabled={salvando}>
                         {salvando ? "Salvando..." : "Atualizar Agendamento"}
                       </button>
                     </div>
@@ -374,8 +375,7 @@ function EditarAgendamento() {
         <SimularFrete
           freteAtual={agendamento.frete}
           aoConfirmar={vincularFrete}
-          aoFechar={() => setSimulandoFrete(false)}
-        />
+          aoFechar={() => setSimulandoFrete(false)}/>
       )}
     </div>
   );
