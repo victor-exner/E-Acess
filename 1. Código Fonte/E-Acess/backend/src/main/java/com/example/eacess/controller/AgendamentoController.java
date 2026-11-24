@@ -2,6 +2,7 @@ package com.example.eacess.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,14 +48,18 @@ public class AgendamentoController {
 
     // 3. Salvar ou atualizar agendamento
     @PostMapping 
-    public ResponseEntity<Agendamento> salvar(@RequestBody Agendamento agendamento){
-        Agendamento novAgendamento = agendamentoService.salvar(agendamento);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novAgendamento);
+    public ResponseEntity<?> salvar(@RequestBody Agendamento agendamento){
+        try{
+            Agendamento novAgendamento = agendamentoService.salvar(agendamento);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novAgendamento);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().body(Map.of("mensagem", e.getMessage()));
+        }
     }
 
     // 4. Atualizando agendamento existente
     @PutMapping("/{id}")
-    public ResponseEntity<Agendamento> atualizar(
+    public ResponseEntity<?> atualizar(
         @PathVariable int id, @RequestBody Agendamento dadosAtualizados){
 
         Optional<Agendamento> agendamentoExistente = agendamentoService.buscarPorId(id);
@@ -65,17 +70,27 @@ public class AgendamentoController {
 
         Agendamento agendamento = agendamentoExistente.get();
 
-        agendamento.setData(dadosAtualizados.getData());
-        agendamento.setTransportadora(dadosAtualizados.getTransportadora());
-        agendamento.setMotorista(dadosAtualizados.getMotorista());
-        agendamento.setPlaca(dadosAtualizados.getPlaca());
-        agendamento.setObservacao(dadosAtualizados.getObservacao());
-        agendamento.setStatus(dadosAtualizados.getStatus());
-        agendamento.setColeta(dadosAtualizados.isColeta());
+        try{
+            // Só valida a data se ela foi alterada (permite editar agendamentos com data antiga)
+            LocalDate novaData = dadosAtualizados.getData();
+            if(novaData == null || !novaData.equals(agendamento.getData())){
+                agendamentoService.validarData(novaData);
+            }
 
-        Agendamento atualizado = agendamentoService.salvar(agendamento);
+            agendamento.setData(dadosAtualizados.getData());
+            agendamento.setTransportadora(dadosAtualizados.getTransportadora());
+            agendamento.setMotorista(dadosAtualizados.getMotorista());
+            agendamento.setPlaca(dadosAtualizados.getPlaca());
+            agendamento.setObservacao(dadosAtualizados.getObservacao());
+            agendamento.setStatus(dadosAtualizados.getStatus());
+            agendamento.setColeta(dadosAtualizados.isColeta());
 
-        return ResponseEntity.ok(atualizado);
+            Agendamento atualizado = agendamentoService.salvar(agendamento);
+
+            return ResponseEntity.ok(atualizado);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().body(Map.of("mensagem", e.getMessage()));
+        }
         }
 
     // 5. Excluir agendamento por ID

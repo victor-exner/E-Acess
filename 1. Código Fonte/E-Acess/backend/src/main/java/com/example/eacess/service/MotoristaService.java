@@ -99,5 +99,10 @@ public class MotoristaService {
         if (!motorista.getDocumento().trim().matches("^\\d+$")) {
             throw new IllegalArgumentException("O documento deve conter apenas números");
         }
+
+        // RN03 - Documento com exatamente 11 dígitos
+        if (motorista.getDocumento().trim().length() != 11) {
+            throw new IllegalArgumentException("O documento deve ter exatamente 11 dígitos");
+        }
     }
 }

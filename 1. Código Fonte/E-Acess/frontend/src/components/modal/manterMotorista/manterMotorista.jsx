@@ -84,6 +84,10 @@ function ManterMotoristaModal({ aoFechar, aoSelecionarMotorista }) {
       setMensagemErro("O documento deve conter apenas números.");
       return;
     }
+    if (documento.trim().length !== 11) {
+      setMensagemErro("O documento deve ter exatamente 11 dígitos.");
+      return;
+    }
 
     setSalvando(true);
     const dados = { nome: nome.trim(), documento: documento.trim() };
@@ -287,13 +291,16 @@ function ManterMotoristaModal({ aoFechar, aoSelecionarMotorista }) {
             </div>
 
             <div className="motorista-campo">
-              <label htmlFor="mot-doc">Documento (apenas números) *</label>
+              <label htmlFor="mot-doc">Documento (11 dígitos) *</label>
               <input
                 id="mot-doc"
                 type="text"
                 required
                 value={documento}
-                onChange={(e) => setDocumento(e.target.value)}
+                onChange={(e) => setDocumento(e.target.value.replace(/\D/g, ""))}
+                inputMode="numeric"
+                minLength={11}
+                maxLength={11}
                 placeholder="Ex.: 12345678901"
                 disabled={salvando}/>
             </div>

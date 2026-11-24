@@ -8,6 +8,14 @@ import "./cadastrarAgendamentos.css";
 import ManterMotoristaModal from "../../components/modal/manterMotorista/manterMotorista";
 import ManterTransportadoraModal from "../../components/modal/manterTransportadora/manterTransportadora";
 
+// Data de hoje (fuso local) no formato AAAA-MM-DD
+function obterDataHoje() {
+  const hoje = new Date();
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const dia = String(hoje.getDate()).padStart(2, "0");
+  return `${hoje.getFullYear()}-${mes}-${dia}`;
+}
+
 function CadastrarAgendamento() {
   const navigate = useNavigate();
 
@@ -76,6 +84,19 @@ function CadastrarAgendamento() {
   async function salvarAgendamento(event) {
     event.preventDefault();
 
+    // Validações: data não pode ser passada e a placa deve ter 7 caracteres
+    if (data < obterDataHoje()) {
+      setMensagemErro("Não é possível agendar em datas passadas.");
+      return;
+    }
+
+    if (!/^[A-Z0-9]{7}$/.test(placa.trim().toUpperCase())) {
+      setMensagemErro(
+        "A placa deve ter exatamente 7 caracteres (letras e números).",
+      );
+      return;
+    }
+
     setSalvando(true);
     setMensagemErro("");
     setMensagemSucesso("");
@@ -104,7 +125,10 @@ function CadastrarAgendamento() {
       });
 
       if (!resposta.ok) {
-        throw new Error("Não foi possível cadastrar o agendamento.");
+        const corpo = await resposta.json().catch(() => ({}));
+        throw new Error(
+          corpo.mensagem ?? "Não foi possível cadastrar o agendamento.",
+        );
       }
 
       // UC05 - passo 6: vincula o frete simulado ao agendamento recém-criado.
@@ -221,6 +245,7 @@ function CadastrarAgendamento() {
                           id="data-agendamento"
                           className="form-control campo-input"
                           value={data}
+                          min={obterDataHoje()}
                           onChange={(event) => setData(event.target.value)}
                           required
                           disabled={salvando}/>
@@ -294,8 +319,15 @@ function CadastrarAgendamento() {
                           className="form-control campo-input"
                           placeholder="Ex.: ABC1D23"
                           value={placa}
-                          onChange={(event) => setPlaca(event.target.value.toUpperCase())}
-                          maxLength={10}
+                          onChange={(event) =>
+                            setPlaca(
+                              event.target.value
+                                .toUpperCase()
+                                .replace(/[^A-Z0-9]/g, ""),
+                            )
+                          }
+                          minLength={7}
+                          maxLength={7}
                           required
                           disabled={salvando}/>
                       </div>

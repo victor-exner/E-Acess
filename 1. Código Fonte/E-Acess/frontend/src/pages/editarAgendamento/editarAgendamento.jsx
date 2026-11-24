@@ -5,32 +5,71 @@ import SimularFrete, {
   ResumoFrete,
 } from "../../components/simularFrete/simularFrete";
 import "./editarAgendamento.css";
+import ManterMotoristaModal from "../../components/modal/manterMotorista/manterMotorista";
+import ManterTransportadoraModal from "../../components/modal/manterTransportadora/manterTransportadora";
+
+// Data de hoje (fuso local) no formato AAAA-MM-DD
+function obterDataHoje() {
+  const hoje = new Date();
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const dia = String(hoje.getDate()).padStart(2, "0");
+  return `${hoje.getFullYear()}-${mes}-${dia}`;
+}
 
 function EditarAgendamento() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [agendamento, setAgendamento] = useState(null);
+  const [dataOriginal, setDataOriginal] = useState("");
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [mensagemErro, setMensagemErro] = useState("");
   const [mensagemSucesso, setMensagemSucesso] = useState("");
   const [simulandoFrete, setSimulandoFrete] = useState(false);
 
-  // Busca os dados atuais do agendamento
+  // UC03 - controle do modal de motoristas
+  const [gerenciandoMotorista, setGerenciandoMotorista] = useState(false);
+
+  // Manter Transportadora - controle do modal de transportadoras
+  const [gerenciandoTransportadora, setGerenciandoTransportadora] =
+    useState(false);
+
+  const [transportadoras, setTransportadoras] = useState([]);
+  const [motoristas, setMotoristas] = useState([]);
+
+  // Busca os dados atuais do agendamento, as transportadoras e os motoristas
   useEffect(() => {
     async function carregarAgendamento() {
       try {
-        const resposta = await fetch(
-          `http://localhost:8080/agendamentos/${id}`,
-        );
+        const [
+          respostaAgendamento,
+          respostaTransportadoras,
+          respostaMotoristas,
+        ] = await Promise.all([
+          fetch(`http://localhost:8080/agendamentos/${id}`),
+          fetch("http://localhost:8080/transportadoras"),
+          fetch("http://localhost:8080/motoristas"),
+        ]);
 
-        if (!resposta.ok) {
+        if (!respostaAgendamento.ok) {
           throw new Error("Não foi possível encontrar o agendamento.");
         }
 
-        const dados = await resposta.json();
+        if (!respostaTransportadoras.ok || !respostaMotoristas.ok) {
+          throw new Error(
+            "Não foi possível carregar as transportadoras e os motoristas.",
+          );
+        }
+
+        const dados = await respostaAgendamento.json();
+        const dadosTransportadoras = await respostaTransportadoras.json();
+        const dadosMotoristas = await respostaMotoristas.json();
+
         setAgendamento(dados);
+        setDataOriginal(dados.data);
+        setTransportadoras(dadosTransportadoras);
+        setMotoristas(dadosMotoristas);
       } catch (erro) {
         setMensagemErro(erro.message);
       } finally {
@@ -47,9 +86,58 @@ function EditarAgendamento() {
 
     setAgendamento((atual) => ({
       ...atual,
-      [name]: name === "placa" ? value.toUpperCase() : value,
+      [name]:
+        name === "placa" ? value.toUpperCase().replace(/[^A-Z0-9]/g, "") : value,
     }));
 
+    setMensagemErro("");
+    setMensagemSucesso("");
+  }
+
+  // Troca a transportadora escolhida no select
+  function selecionarTransportadora(event) {
+    const escolhida = transportadoras.find(
+      (t) => String(t.id) === event.target.value,
+    );
+
+    setAgendamento((atual) => ({ ...atual, transportadora: escolhida ?? null }));
+    setMensagemErro("");
+    setMensagemSucesso("");
+  }
+
+  // Troca o motorista escolhido no select
+  function selecionarMotorista(event) {
+    const escolhido = motoristas.find((m) => String(m.id) === event.target.value);
+
+    setAgendamento((atual) => ({ ...atual, motorista: escolhido ?? null }));
+    setMensagemErro("");
+    setMensagemSucesso("");
+  }
+
+  // UC03 - RN05: atualiza a lista e seleciona o motorista recém-criado/escolhido no formulário
+  function vincularMotorista(novoMotorista) {
+    setMotoristas((atuais) => {
+      const existe = atuais.some((m) => m.id === novoMotorista.id);
+      return existe
+        ? atuais.map((m) => (m.id === novoMotorista.id ? novoMotorista : m))
+        : [...atuais, novoMotorista];
+    });
+    setAgendamento((atual) => ({ ...atual, motorista: novoMotorista }));
+    setMensagemErro("");
+    setMensagemSucesso("");
+  }
+
+  // Manter Transportadora - RN04: atualiza a lista e seleciona a transportadora recém-criada/escolhida no formulário
+  function vincularTransportadora(novaTransportadora) {
+    setTransportadoras((atuais) => {
+      const existe = atuais.some((t) => t.id === novaTransportadora.id);
+      return existe
+        ? atuais.map((t) =>
+            t.id === novaTransportadora.id ? novaTransportadora : t,
+          )
+        : [...atuais, novaTransportadora];
+    });
+    setAgendamento((atual) => ({ ...atual, transportadora: novaTransportadora }));
     setMensagemErro("");
     setMensagemSucesso("");
   }
@@ -58,6 +146,19 @@ function EditarAgendamento() {
   async function confirmarAgendamento(event) {
     event.preventDefault();
 
+    // Validações: a data só é verificada se foi alterada (permite editar agendamentos antigos)
+    if (agendamento.data !== dataOriginal && agendamento.data < obterDataHoje()) {
+      setMensagemErro("Não é possível agendar em datas passadas.");
+      return;
+    }
+
+    if (!/^[A-Z0-9]{7}$/.test(agendamento.placa.trim().toUpperCase())) {
+      setMensagemErro(
+        "A placa deve ter exatamente 7 caracteres (letras e números).",
+      );
+      return;
+    }
+
     setSalvando(true);
     setMensagemErro("");
     setMensagemSucesso("");
@@ -65,6 +166,12 @@ function EditarAgendamento() {
     try {
       const dadosAtualizados = {
         data: agendamento.data,
+        transportadora: {
+          id: Number(agendamento.transportadora?.id),
+        },
+        motorista: {
+          id: Number(agendamento.motorista?.id),
+        },
         placa: agendamento.placa.trim().toUpperCase(),
         observacao: agendamento.observacao,
         status: agendamento.status,
@@ -84,12 +191,16 @@ function EditarAgendamento() {
           throw new Error("Agendamento não encontrado.");
         }
 
-        throw new Error("Não foi possível salvar as alterações.");
+        const corpo = await resposta.json().catch(() => ({}));
+        throw new Error(
+          corpo.mensagem ?? "Não foi possível salvar as alterações.",
+        );
       }
 
       const dadosSalvos = await resposta.json();
 
       setAgendamento(dadosSalvos);
+      setDataOriginal(dadosSalvos.data);
       setMensagemSucesso("Agendamento atualizado com sucesso!");
     } catch (erro) {
       setMensagemErro(erro.message);
@@ -129,9 +240,9 @@ function EditarAgendamento() {
   function renderBadgeStatus(status) {
     const texto = String(status ?? "PENDENTE").replaceAll("_", " ");
     if (status === "CONCLUIDO")
-      return <span className="badge bg-success">{texto}</span>;
+      return <span className="badge bg-success badge-status">{texto}</span>;
     if (status === "ANDAMENTO")
-      return <span className="badge bg-primary">{texto}</span>;
+      return <span className="badge bg-primary badge-status">{texto}</span>;
     return (
       <span className="badge bg-warning text-dark badge-status">{texto}</span>
     );
@@ -207,26 +318,58 @@ function EditarAgendamento() {
                           <label htmlFor="transportadora" className="form-label fw-bold texto-azul-escuro mb-1">
                             Transportadora
                           </label>
-                          <input
+                          <select
                             id="transportadora"
-                            type="text"
-                            className="form-control campo-readonly"
-                            value={agendamento.transportadora?.nome ?? ""}
-                            readOnly
-                            disabled/>
+                            name="transportadora"
+                            className="form-select campo-input"
+                            value={agendamento.transportadora?.id ?? ""}
+                            onChange={selecionarTransportadora}
+                            required
+                            disabled={salvando}>
+                            <option value="">Selecione uma transportadora</option>
+                            {transportadoras.map((transportadora) => (
+                              <option key={transportadora.id} value={transportadora.id}>
+                                {transportadora.nome}
+                              </option>
+                            ))}
+                          </select>
+
+                          <button
+                            type="button"
+                            className="btn btn-sm editarAgendamento-btns mt-2"
+                            onClick={() => setGerenciandoTransportadora(true)}
+                            disabled={salvando}>
+                            Gerenciar transportadoras
+                          </button>
                         </div>
 
                         <div>
                           <label htmlFor="motorista" className="form-label fw-bold texto-azul-escuro mb-1">
                             Motorista
                           </label>
-                          <input
+                          <select
                             id="motorista"
-                            type="text"
-                            className="form-control campo-readonly"
-                            value={agendamento.motorista?.nome ?? ""}
-                            readOnly
-                            disabled/>
+                            name="motorista"
+                            className="form-select campo-input"
+                            value={agendamento.motorista?.id ?? ""}
+                            onChange={selecionarMotorista}
+                            required
+                            disabled={salvando}>
+                            <option value="">Selecione um motorista</option>
+                            {motoristas.map((motorista) => (
+                              <option key={motorista.id} value={motorista.id}>
+                                {motorista.nome}
+                              </option>
+                            ))}
+                          </select>
+
+                          <button
+                            type="button"
+                            className="btn btn-sm editarAgendamento-btns mt-2"
+                            onClick={() => setGerenciandoMotorista(true)}
+                            disabled={salvando}>
+                            Gerenciar motoristas
+                          </button>
                         </div>
 
                         <div>
@@ -238,7 +381,8 @@ function EditarAgendamento() {
                             name="placa"
                             type="text"
                             className="form-control campo-input"
-                            maxLength={10}
+                            minLength={7}
+                            maxLength={7}
                             value={agendamento.placa ?? ""}
                             onChange={atualizarCampo}
                             required
@@ -376,6 +520,18 @@ function EditarAgendamento() {
           freteAtual={agendamento.frete}
           aoConfirmar={vincularFrete}
           aoFechar={() => setSimulandoFrete(false)}/>
+      )}
+
+      {gerenciandoMotorista && (
+        <ManterMotoristaModal
+          aoFechar={() => setGerenciandoMotorista(false)}
+          aoSelecionarMotorista={vincularMotorista}/>
+      )}
+
+      {gerenciandoTransportadora && (
+        <ManterTransportadoraModal
+          aoFechar={() => setGerenciandoTransportadora(false)}
+          aoSelecionarTransportadora={vincularTransportadora}/>
       )}
     </div>
   );
