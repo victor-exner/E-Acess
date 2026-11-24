@@ -240,9 +240,9 @@ function EditarAgendamento() {
   function renderBadgeStatus(status) {
     const texto = String(status ?? "PENDENTE").replaceAll("_", " ");
     if (status === "CONCLUIDO")
-      return <span className="badge bg-success">{texto}</span>;
+      return <span className="badge bg-success badge-status">{texto}</span>;
     if (status === "ANDAMENTO")
-      return <span className="badge bg-primary">{texto}</span>;
+      return <span className="badge bg-primary badge-status">{texto}</span>;
     return (
       <span className="badge bg-warning text-dark badge-status">{texto}</span>
     );
