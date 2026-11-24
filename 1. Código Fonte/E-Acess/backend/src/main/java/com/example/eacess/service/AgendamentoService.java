@@ -28,8 +28,16 @@ public class AgendamentoService {
 
     // Salvar ou atualizar agendamento
     public Agendamento salvar(Agendamento agendamento){
-        // Adicionar aqui futuras validações antes de salvar dados do agendamento
-        
+        // Validações antes de salvar dados do agendamento
+        validarPlaca(agendamento.getPlaca());
+
+        // A data só é validada no cadastro; na edição, o controller valida apenas se a data foi alterada
+        if(agendamento.getId() == 0){
+            validarData(agendamento.getData());
+        }
+
+        agendamento.setPlaca(agendamento.getPlaca().trim().toUpperCase());
+
         // Garante que o valor padrão de "status" seja "pendente"
         if(agendamento.getStatus() == null){
             agendamento.setStatus(Status.PENDENTE);
@@ -42,6 +50,24 @@ public class AgendamentoService {
         }
 
         return agendamentoRepository.save(agendamento);
+    }
+
+    // Validação da data: não permite agendar em datas passadas
+    public void validarData(LocalDate data){
+        if(data == null){
+            throw new IllegalArgumentException("A data do agendamento é obrigatória");
+        }
+
+        if(data.isBefore(LocalDate.now())){
+            throw new IllegalArgumentException("Não é possível agendar em datas passadas");
+        }
+    }
+
+    // Validação da placa: exatamente 7 caracteres (letras e números)
+    public void validarPlaca(String placa){
+        if(placa == null || !placa.trim().matches("^[A-Za-z0-9]{7}$")){
+            throw new IllegalArgumentException("A placa deve ter exatamente 7 caracteres (letras e números)");
+        }
     }
 
     // Excluir agendamento por ID 

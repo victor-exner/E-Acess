@@ -8,11 +8,20 @@ import "./editarAgendamento.css";
 import ManterMotoristaModal from "../../components/modal/manterMotorista/manterMotorista";
 import ManterTransportadoraModal from "../../components/modal/manterTransportadora/manterTransportadora";
 
+// Data de hoje (fuso local) no formato AAAA-MM-DD
+function obterDataHoje() {
+  const hoje = new Date();
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const dia = String(hoje.getDate()).padStart(2, "0");
+  return `${hoje.getFullYear()}-${mes}-${dia}`;
+}
+
 function EditarAgendamento() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [agendamento, setAgendamento] = useState(null);
+  const [dataOriginal, setDataOriginal] = useState("");
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [mensagemErro, setMensagemErro] = useState("");
@@ -58,6 +67,7 @@ function EditarAgendamento() {
         const dadosMotoristas = await respostaMotoristas.json();
 
         setAgendamento(dados);
+        setDataOriginal(dados.data);
         setTransportadoras(dadosTransportadoras);
         setMotoristas(dadosMotoristas);
       } catch (erro) {
@@ -76,7 +86,8 @@ function EditarAgendamento() {
 
     setAgendamento((atual) => ({
       ...atual,
-      [name]: name === "placa" ? value.toUpperCase() : value,
+      [name]:
+        name === "placa" ? value.toUpperCase().replace(/[^A-Z0-9]/g, "") : value,
     }));
 
     setMensagemErro("");
@@ -135,6 +146,19 @@ function EditarAgendamento() {
   async function confirmarAgendamento(event) {
     event.preventDefault();
 
+    // Validações: a data só é verificada se foi alterada (permite editar agendamentos antigos)
+    if (agendamento.data !== dataOriginal && agendamento.data < obterDataHoje()) {
+      setMensagemErro("Não é possível agendar em datas passadas.");
+      return;
+    }
+
+    if (!/^[A-Z0-9]{7}$/.test(agendamento.placa.trim().toUpperCase())) {
+      setMensagemErro(
+        "A placa deve ter exatamente 7 caracteres (letras e números).",
+      );
+      return;
+    }
+
     setSalvando(true);
     setMensagemErro("");
     setMensagemSucesso("");
@@ -167,12 +191,16 @@ function EditarAgendamento() {
           throw new Error("Agendamento não encontrado.");
         }
 
-        throw new Error("Não foi possível salvar as alterações.");
+        const corpo = await resposta.json().catch(() => ({}));
+        throw new Error(
+          corpo.mensagem ?? "Não foi possível salvar as alterações.",
+        );
       }
 
       const dadosSalvos = await resposta.json();
 
       setAgendamento(dadosSalvos);
+      setDataOriginal(dadosSalvos.data);
       setMensagemSucesso("Agendamento atualizado com sucesso!");
     } catch (erro) {
       setMensagemErro(erro.message);
@@ -353,7 +381,8 @@ function EditarAgendamento() {
                             name="placa"
                             type="text"
                             className="form-control campo-input"
-                            maxLength={10}
+                            minLength={7}
+                            maxLength={7}
                             value={agendamento.placa ?? ""}
                             onChange={atualizarCampo}
                             required
